@@ -1,14 +1,19 @@
-import '../src/App.css'
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Navbar from './components/Shared/Navbar'; // Make sure this path is correct
+import Footer from './components/Shared/Footer'; // Make sure this path is correct
 
 function App() {
-
   return (
     <>
-  
-      <h1 className='text-6xl font-bold'>GigConnect</h1>
-
+      <Navbar />
+      <main className="min-h-[calc(100vh-200px)] max-w-7xl mx-auto px-4 py-8"> {/* Adjust min-height based on Navbar/Footer actual height */}
+        {/* This is where the routed page content will be rendered */}
+        <Outlet />
+      </main>
+      <Footer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
