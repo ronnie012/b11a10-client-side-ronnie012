@@ -8,6 +8,7 @@ import MyPostedTasksPage from '../pages/MyPostedTasksPage.jsx';
 import LoginPage from '../pages/LoginPage.jsx';
 import SignupPage from '../pages/SignupPage.jsx';
 import TaskDetailPage from '../pages/TaskDetailPage.jsx';
+import UpdateTaskPage from '../pages/UpdateTaskPage.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 
 const router = createBrowserRouter([
@@ -43,6 +44,14 @@ const router = createBrowserRouter([
       {
         path: "/task/:taskId", // Dynamic route for task details
         element: <TaskDetailPage />, // Public for now, can be made private if needed
+      },
+      {
+        path: "/update-task/:taskId", // Route for updating a task
+        element: (
+          <PrivateRoute>
+            <UpdateTaskPage />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/login",

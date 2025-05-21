@@ -80,6 +80,19 @@ const fetchTaskByIdAPI = (taskId) => {
             creatorPhotoURL: 'https://i.pravatar.cc/150?u=edward@example.com',
             bids: []
         },
+        {
+            _id: '6',
+            title: 'Translate Document English to Spanish',
+            description: 'Need a 5-page technical document translated accurately from English to Spanish. The document contains industry-specific terminology, so attention to detail and accuracy is paramount. Previous experience with technical translations preferred.',
+            category: 'writing-translation',
+            budget: 250,
+            deadline: '2025-07-15',
+            creatorName: 'Fiona',
+            creatorEmail: 'fiona@example.com',
+            creatorUid: 'uid-fiona',
+            creatorPhotoURL: 'https://i.pravatar.cc/150?u=fiona@example.com',
+            bids: [] // No bids yet for this new task
+        },
     ];
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -121,6 +134,7 @@ const TaskDetailPage = () => {
     const [task, setTask] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [userBidsCount, setUserBidsCount] = useState(0);
     const [isSubmittingBid, setIsSubmittingBid] = useState(false);
 
     const { register: registerBid, handleSubmit: handleBidSubmit, formState: { errors: bidErrors }, reset: resetBidForm } = useForm();
@@ -128,6 +142,14 @@ const TaskDetailPage = () => {
 
     useEffect(() => {
         const getTaskDetails = async () => {
+            // Load user's total bids count from localStorage
+            if (user) {
+                const storedBidsCount = localStorage.getItem(`userBidsCount_${user.uid}`);
+                if (storedBidsCount) {
+                    setUserBidsCount(parseInt(storedBidsCount, 10));
+                }
+            }
+
             try {
                 setLoading(true);
                 setError(null);
@@ -161,7 +183,7 @@ const TaskDetailPage = () => {
             setError("Task ID is missing."); // Should not happen with proper routing
             setLoading(false);
         }
-    }, [taskId]); // Re-run effect if taskId changes
+    }, [taskId, user]); // Re-run effect if taskId or user changes
 
     const onBidSubmit = async (data) => {
         if (!user) {
@@ -186,6 +208,12 @@ const TaskDetailPage = () => {
             // await submitBidToBackendAPI(bidData, taskId, { uid: user.uid, email: user.email }, idToken);
             await submitBidToBackendAPI(bidData, taskId, { uid: user.uid, email: user.email, name: user.displayName }, "mock_auth_token");
 
+            // Increment and save user's total bids count
+            const newBidsCount = userBidsCount + 1;
+            setUserBidsCount(newBidsCount);
+            if (user) {
+                localStorage.setItem(`userBidsCount_${user.uid}`, newBidsCount.toString());
+            }
             Swal.fire("Success!", "Your bid has been placed successfully!", "success");
             resetBidForm();
             // TODO: Potentially refresh bids list or update UI
@@ -231,6 +259,11 @@ const TaskDetailPage = () => {
     // Basic UI for task details
     return (
         <div className="container mx-auto px-4 py-8">
+            {user && (
+                <div className="mb-4 p-3 bg-info text-info-content rounded-md shadow">
+                    <p className="text-center font-semibold">You have bid for {userBidsCount} opportunities.</p>
+                </div>
+            )}
             <div className="card lg:card-side bg-base-100 shadow-xl">
                 {/* Optional: Task image or category icon could go here */}
                 <div className="card-body">

@@ -93,29 +93,52 @@ const MyPostedTasksPage = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-3xl font-bold mb-6 text-center">My Posted Tasks</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {myTasks.map(task => (
-                    <div key={task._id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 flex flex-col">
-                        <div className="card-body flex-grow">
-                            <h3 className="card-title text-xl lg:text-2xl">{task.title}</h3>
-                            <p className="text-xs text-gray-400 mb-1">Category: <span className="font-semibold text-gray-600">{task.category}</span></p>
-                            <p className="text-sm mt-1 mb-3 flex-grow">{task.description.substring(0, 100)}...</p>
-                            <div className="flex justify-between items-center mt-auto pt-2 border-t border-base-300">
-                                <div className="text-lg font-bold text-primary">${task.budget}</div>
-                                <div className="text-xs text-gray-500">Due: {new Date(task.deadline).toLocaleDateString()}</div>
-                            </div>
-                        </div>
-                        <div className="card-actions justify-between items-center p-4 pt-0"> {/* Use justify-between for buttons */}
-                            <Link to={`/task/${task._id}`} className="btn btn-primary btn-sm">
-                                View Details
-                            </Link>
-                            {/* Placeholder for Edit/Delete buttons */}
-                            {/* <button className="btn btn-sm btn-outline btn-info">Edit</button> */}
-                            {/* <button className="btn btn-sm btn-outline btn-error">Delete</button> */}
-                        </div>
-                    </div>
-                ))}
+            <div className="overflow-x-auto">
+                <table className="table w-full">
+                    {/* head */}
+                    <thead>
+                        <tr>
+                            <th>Task Title</th>
+                            <th>Category</th>
+                            <th>Budget</th>
+                            <th>Deadline</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {myTasks.map(task => (
+                            <tr key={task._id} className="hover">
+                                <td>
+                                    <div className="font-bold">{task.title}</div>
+                                    <div className="text-sm opacity-70">{task.description.substring(0,50)}...</div>
+                                </td>
+                                <td>{task.category}</td>
+                                <td>${task.budget}</td>
+                                <td>{new Date(task.deadline).toLocaleDateString()}</td>
+                                <td className="space-x-1">
+                                    <Link 
+                                        to={`/update-task/${task._id}`} // We'll create this route and page next
+                                        className="btn btn-info btn-xs"
+                                    >
+                                        Update
+                                    </Link>
+                                    <button 
+                                        // onClick={() => handleDelete(task._id)} // We'll implement this
+                                        className="btn btn-error btn-xs"
+                                    >
+                                        Delete
+                                    </button>
+                                    <Link 
+                                        to={`/task/${task._id}`} // This links to the TaskDetailPage where bids are shown
+                                        className="btn btn-secondary btn-xs"
+                                    >
+                                        Bids
+                                    </Link>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
