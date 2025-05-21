@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Import Link
+import { Link } from 'react-router-dom'; // Imported Link
 
-// Mock data - in a real app, this would come from your backend API
+// Mock data - in a real app, this would come from my backend API
 const mockTasksData = [
     { _id: '1', title: 'Design Website Mockups', description: 'Need mockups for a new e-commerce site.', category: 'graphic-design', budget: 500, deadline: '2024-08-15', creatorName: 'Alice' },
     { _id: '2', title: 'Write Blog Post', description: 'Require a 1000-word blog post on remote work tips.', category: 'writing-translation', budget: 150, deadline: '2024-08-10', creatorName: 'Bob' },
