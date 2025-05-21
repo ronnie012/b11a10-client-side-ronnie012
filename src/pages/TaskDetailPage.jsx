@@ -6,13 +6,80 @@ import Swal from 'sweetalert2';
 
 // Simulate fetching a single task by ID (replace with actual API call later)
 const fetchTaskByIdAPI = (taskId) => {
-    // Mock data - in a real app, this would come from your backend API
+    // Mock data - in a real app, this would come from my backend API
     const allMockTasksData = [
-        { _id: '1', title: 'Design Website Mockups', description: 'Need mockups for a new e-commerce site. This involves creating 5 pages: Homepage, Product Listing, Product Detail, Cart, and Checkout. Brand guidelines will be provided. Looking for a modern and clean design.', category: 'graphic-design', budget: 500, deadline: '2024-08-15', creatorName: 'Alice', creatorEmail: 'alice@example.com', creatorUid: 'uid-alice', creatorPhotoURL: 'https://i.pravatar.cc/150?u=alice@example.com' },
-        { _id: '2', title: 'Write Blog Post', description: 'Require a 1000-word blog post on remote work tips. The article should be well-researched, engaging, and SEO-friendly. Target audience is young professionals.', category: 'writing-translation', budget: 150, deadline: '2024-08-10', creatorName: 'Bob', creatorEmail: 'bob@example.com', creatorUid: 'uid-bob', creatorPhotoURL: 'https://i.pravatar.cc/150?u=bob@example.com' },
-        { _id: '3', title: 'Develop REST API', description: 'Build a Node.js REST API for user management. Endpoints should include CRUD operations for users, authentication, and authorization. Experience with Express.js and MongoDB preferred.', category: 'web-development', budget: 1200, deadline: '2024-09-01', creatorName: 'Charlie', creatorEmail: 'charlie@example.com', creatorUid: 'uid-charlie', creatorPhotoURL: 'https://i.pravatar.cc/150?u=charlie@example.com' },
-        { _id: '4', title: 'Video Editing for YouTube Channel', description: 'Edit raw footage (approx 30 mins) into 3-5 engaging YouTube videos (5-7 mins each). Includes color correction, adding graphics, and sound mixing.', category: 'video-animation', budget: 300, deadline: '2024-08-25', creatorName: 'Diana', creatorEmail: 'diana@example.com', creatorUid: 'uid-diana', creatorPhotoURL: 'https://i.pravatar.cc/150?u=diana@example.com' },
-        { _id: '5', title: 'SEO Audit and Strategy', description: 'Perform an SEO audit for an existing e-commerce website and provide a comprehensive strategy document for improvement. Focus on on-page, off-page, and technical SEO.', category: 'digital-marketing', budget: 600, deadline: '2024-09-10', creatorName: 'Edward', creatorEmail: 'edward@example.com', creatorUid: 'uid-edward', creatorPhotoURL: 'https://i.pravatar.cc/150?u=edward@example.com' },
+        {
+            _id: '1',
+            title: 'Design Website Mockups',
+            description: 'Need mockups for a new e-commerce site. This involves creating 5 pages: Homepage, Product Listing, Product Detail, Cart, and Checkout. Brand guidelines will be provided. Looking for a modern and clean design.',
+            category: 'graphic-design',
+            budget: 500,
+            deadline: '2024-08-15',
+            creatorName: 'Alice',
+            creatorEmail: 'alice@example.com',
+            creatorUid: 'uid-alice',
+            creatorPhotoURL: 'https://i.pravatar.cc/150?u=alice@example.com',
+            bids: [
+                { _id: 'bid101', bidderName: 'Bob The Builder', bidderEmail: 'bob@example.com', bidderUid: 'uid-bob', bidAmount: 450, proposedDeadline: '2024-08-14', bidDate: '2024-07-20T10:00:00Z', proposalText: 'I have extensive experience in e-commerce design and can deliver high-quality mockups quickly.' },
+                { _id: 'bid102', bidderName: 'Carol Designer', bidderEmail: 'carol@example.com', bidderUid: 'uid-carol', bidAmount: 480, proposedDeadline: '2024-08-12', bidDate: '2024-07-21T14:30:00Z', proposalText: 'My portfolio showcases modern designs. I can start immediately.' },
+            ]
+        },
+        {
+            _id: '2',
+            title: 'Write Blog Post',
+            description: 'Require a 1000-word blog post on remote work tips. The article should be well-researched, engaging, and SEO-friendly. Target audience is young professionals.',
+            category: 'writing-translation',
+            budget: 150,
+            deadline: '2024-08-10',
+            creatorName: 'Bob',
+            creatorEmail: 'bob@example.com',
+            creatorUid: 'uid-bob',
+            creatorPhotoURL: 'https://i.pravatar.cc/150?u=bob@example.com',
+            bids: [
+                { _id: 'bid201', bidderName: 'Alice Writer', bidderEmail: 'alice@example.com', bidderUid: 'uid-alice', bidAmount: 140, proposedDeadline: '2024-08-09', bidDate: '2024-07-22T09:00:00Z', proposalText: 'Experienced content writer, can provide samples.' },
+            ]
+        },
+        {
+            _id: '3',
+            title: 'Develop REST API',
+            description: 'Build a Node.js REST API for user management. Endpoints should include CRUD operations for users, authentication, and authorization. Experience with Express.js and MongoDB preferred.',
+            category: 'web-development',
+            budget: 1200,
+            deadline: '2024-09-01',
+            creatorName: 'Charlie',
+            creatorEmail: 'charlie@example.com',
+            creatorUid: 'uid-charlie',
+            creatorPhotoURL: 'https://i.pravatar.cc/150?u=charlie@example.com',
+            bids: [] // No bids yet for this task
+        },
+        {
+            _id: '4',
+            title: 'Video Editing for YouTube Channel',
+            description: 'Edit raw footage (approx 30 mins) into 3-5 engaging YouTube videos (5-7 mins each). Includes color correction, adding graphics, and sound mixing.',
+            category: 'video-animation',
+            budget: 300,
+            deadline: '2024-08-25',
+            creatorName: 'Diana',
+            creatorEmail: 'diana@example.com',
+            creatorUid: 'uid-diana',
+            creatorPhotoURL: 'https://i.pravatar.cc/150?u=diana@example.com',
+            bids: [
+                { _id: 'bid401', bidderName: 'Edward Editor', bidderEmail: 'edward@example.com', bidderUid: 'uid-edward', bidAmount: 280, proposedDeadline: '2024-08-23', bidDate: '2024-07-25T11:00:00Z', proposalText: 'Fast turnaround, professional quality.' },
+            ]
+        },
+        {
+            _id: '5',
+            title: 'SEO Audit and Strategy',
+            description: 'Perform an SEO audit for an existing e-commerce website and provide a comprehensive strategy document for improvement. Focus on on-page, off-page, and technical SEO.',
+            category: 'digital-marketing',
+            budget: 600,
+            deadline: '2024-09-10',
+            creatorName: 'Edward',
+            creatorEmail: 'edward@example.com',
+            creatorUid: 'uid-edward',
+            creatorPhotoURL: 'https://i.pravatar.cc/150?u=edward@example.com',
+            bids: []
+        },
     ];
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -168,11 +235,11 @@ const TaskDetailPage = () => {
                 {/* Optional: Task image or category icon could go here */}
                 <div className="card-body">
                     <h1 className="card-title text-3xl lg:text-4xl mb-2">{task.title}</h1>
-                    
+
                     <div className="mb-3 flex items-center space-x-3">
                         <span className="badge badge-accent badge-outline mr-2">{task.category}</span>
                         <div className="flex items-center text-sm text-gray-500">
-                            {task.creatorPhotoURL && <img src={task.creatorPhotoURL} alt={task.creatorName} className="w-6 h-6 rounded-full mr-2"/>}
+                            {task.creatorPhotoURL && <img src={task.creatorPhotoURL} alt={task.creatorName} className="w-6 h-6 rounded-full mr-2" />}
                             <span>Posted by: {task.creatorName}</span>
                         </div>
                     </div>
@@ -233,11 +300,32 @@ const TaskDetailPage = () => {
                         )}
                     </div>
 
-                     {/* Placeholder for Existing Bids Section (if applicable) */}
-                     {/* <div className="mt-8 border-t pt-6">
-                        <h3 className="text-2xl font-semibold mb-4">Current Bids</h3>
-                        <p className="text-gray-700">List of bids will go here...</p>
-                    </div> */}
+                    {/* Section to Display Existing Bids */}
+                    <div className="mt-8 border-t pt-6">
+                        <h3 className="text-2xl font-semibold mb-4">Current Bids ({task.bids?.length || 0})</h3>
+                        {task.bids && task.bids.length > 0 ? (
+                            <div className="space-y-4">
+                                {task.bids.map(bid => (
+                                    <div key={bid._id} className="card card-compact bg-base-200 shadow">
+                                        <div className="card-body">
+                                            <div className="flex justify-between items-start">
+                                                <h4 className="card-title text-lg">{bid.bidderName}</h4>
+                                                <span className="text-lg font-semibold text-secondary">${bid.bidAmount}</span>
+                                            </div>
+                                            <p className="text-xs text-gray-500">
+                                                Proposed Deadline: {new Date(bid.proposedDeadline).toLocaleDateString()} |
+                                                Bid Placed: {new Date(bid.bidDate).toLocaleDateString()}
+                                            </p>
+                                            {bid.proposalText && <p className="text-sm mt-2">{bid.proposalText}</p>}
+                                            {/* TODO: Add "Accept Bid" button for task creator */}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500">No bids have been placed on this task yet.</p>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
