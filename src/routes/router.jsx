@@ -9,6 +9,7 @@ import LoginPage from '../pages/LoginPage.jsx';
 import SignupPage from '../pages/SignupPage.jsx';
 import TaskDetailPage from '../pages/TaskDetailPage.jsx';
 import UpdateTaskPage from '../pages/UpdateTaskPage.jsx';
+import ErrorPage from '../pages/ErrorPage.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 
 const router = createBrowserRouter([
@@ -61,8 +62,13 @@ const router = createBrowserRouter([
         path: "/signup",
         element: <SignupPage />,
       },
+
     ],
   },
+  {
+    path: "*",
+    element: <ErrorPage />
+  }
 ]);
 
 export default router;
