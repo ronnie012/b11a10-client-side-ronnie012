@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useAuth from '../hooks/useAuth';
 import { Link } from 'react-router-dom'; // Imported Link
+import Swal from 'sweetalert2';
 
 // Mock data - in a real app, this would come from my backend API
 // This represents all tasks available in the system for simulation purposes.
@@ -26,6 +27,27 @@ const fetchMyTasksAPI = (currentUser) => {
     });
 };
 
+// Simulate deleting a task
+const deleteTaskAPI = async (taskId, authToken) => {
+    // In a real app, you would use fetch:
+    // const response = await fetch(`/api/tasks/${taskId}`, {
+    //     method: 'DELETE',
+    //     headers: {
+    //         'Authorization': `Bearer ${authToken}`
+    //     }
+    // });
+    // if (!response.ok) {
+    //     const errorData = await response.json().catch(() => ({ message: 'Failed to delete task and parse error' }));
+    //     throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    // }
+    // return await response.json(); // Or just a success status
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log('Simulating API call to delete task:', { taskId, authToken });
+            resolve({ success: true, message: "Task deleted successfully (simulated)" });
+        }, 500);
+    });
+};
 
 const MyPostedTasksPage = () => {
     const { user } = useAuth(); 
@@ -54,6 +76,37 @@ const MyPostedTasksPage = () => {
             setMyTasks([]);
         }
     }, [user]); 
+
+    const handleDeleteTask = (taskId, taskTitle) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `You are about to delete the task: "${taskTitle}". This action cannot be undone!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    // const idToken = await user.getIdToken(); // For backend auth
+                    await deleteTaskAPI(taskId, "mock_auth_token");
+                    
+                    // Update local state to remove the task
+                    setMyTasks(prevTasks => prevTasks.filter(task => task._id !== taskId));
+
+                    Swal.fire(
+                        'Deleted!',
+                        `Task "${taskTitle}" has been deleted.`,
+                        'success'
+                    );
+                } catch (e) {
+                    console.error("Error deleting task:", e);
+                    Swal.fire("Error!", `Failed to delete task: ${e.message}`, "error");
+                }
+            }
+        });
+    };
 
     if (loading) {
         return (
@@ -123,7 +176,7 @@ const MyPostedTasksPage = () => {
                                         Update
                                     </Link>
                                     <button 
-                                        // onClick={() => handleDelete(task._id)} // We'll implement this
+                                        onClick={() => handleDeleteTask(task._id, task.title)}
                                         className="btn btn-error btn-xs"
                                     >
                                         Delete

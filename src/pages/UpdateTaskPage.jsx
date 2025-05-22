@@ -10,12 +10,13 @@ const fetchTaskByIdAPI = (taskId) => {
     // For now, we'll use a simplified version of the mock data from TaskDetailPage.
     // Ideally, this mock data source would be centralized.
     const allMockTasksData = [
-        { _id: '1', title: 'Design Website Mockups', description: 'Need mockups for a new e-commerce site...', category: 'graphic-design', budget: 500, deadline: '2024-08-15', creatorName: 'Alice', creatorEmail: 'alice@example.com', creatorUid: 'uid-alice' },
-        { _id: '2', title: 'Write Blog Post', description: 'Require a 1000-word blog post...', category: 'writing-translation', budget: 150, deadline: '2024-08-10', creatorName: 'Bob', creatorEmail: 'bob@example.com', creatorUid: 'uid-bob' },
-        { _id: '3', title: 'Develop REST API', description: 'Build a Node.js REST API...', category: 'web-development', budget: 1200, deadline: '2024-09-01', creatorName: 'Charlie', creatorEmail: 'charlie@example.com', creatorUid: 'uid-charlie' },
-        { _id: '4', title: 'Social Media Campaign Setup', description: 'Setup and manage a social media campaign...', category: 'digital-marketing', budget: 750, deadline: '2024-08-20', creatorName: 'Charlie', creatorEmail: 'charlie@example.com', creatorUid: 'uid-charlie' },
-        { _id: '5', title: 'Proofread Novel Manuscript', description: 'Looking for an experienced editor...', category: 'writing-translation', budget: 400, deadline: '2024-09-15', creatorName: 'Alice', creatorEmail: 'alice@example.com', creatorUid: 'uid-alice' },
-        { _id: '6', title: 'Translate Document English to Spanish', description: 'Need a 5-page technical document translated accurately.', category: 'writing-translation', budget: 250, deadline: '2025-07-15', creatorName: 'Fiona', creatorEmail: 'fiona@example.com', creatorUid: 'uid-fiona' },
+        // Match the data structure and content from HomePage.jsx for consistency
+        { _id: '1', title: 'Urgent: Design Landing Page Mockup', description: 'Need a modern mockup for a new SaaS product landing page.', category: 'graphic-design', budget: 350, deadline: '2025-06-15', creatorName: 'Alice', creatorEmail: 'alice@example.com', creatorUid: 'uid-alice' },
+        { _id: '2', title: 'Quick: Write 500-word Blog Post', description: 'Topic: The Future of Remote Work. Needs to be engaging and SEO-friendly.', category: 'writing-translation', budget: 100, deadline: '2025-06-10', creatorName: 'Bob', creatorEmail: 'bob@example.com', creatorUid: 'uid-bob' },
+        { _id: '3', title: 'Develop Small Express.js API Endpoint', description: 'A single endpoint for user data retrieval. Specs provided.', category: 'web-development', budget: 200, deadline: '2025-07-01', creatorName: 'Charlie', creatorEmail: 'charlie@example.com', creatorUid: 'uid-charlie' },
+        { _id: '4', title: 'Social Media Graphics Pack', description: 'Create a pack of 10 social media graphics for an upcoming campaign.', category: 'graphic-design', budget: 250, deadline: '2025-07-05', creatorName: 'Diana', creatorEmail: 'diana@example.com', creatorUid: 'uid-diana' },
+        { _id: '5', title: 'Proofread Short Story (10 pages)', description: 'Looking for grammatical errors and flow improvements.', category: 'writing-translation', budget: 75, deadline: '2025-06-20', creatorName: 'Edward', creatorEmail: 'edward@example.com', creatorUid: 'uid-edward' },
+        { _id: '6', title: 'Create Animated Explainer Video', description: 'A 60-second animated explainer video for a new mobile app.', category: 'video-animation', budget: 600, deadline: '2025-06-25', creatorName: 'Fiona', creatorEmail: 'fiona@example.com', creatorUid: 'uid-fiona' }, // Match HomePage
     ];
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -83,7 +84,10 @@ const UpdateTaskPage = () => {
                     setValue('title', fetchedTask.title);
                     setValue('category', fetchedTask.category);
                     setValue('description', fetchedTask.description);
-                    setValue('deadline', fetchedTask.deadline); // Ensure date format matches input type="date"
+                    // Ensure date format for input type="date" is YYYY-MM-DD
+                    const deadlineDate = new Date(fetchedTask.deadline);
+                    const formattedDeadline = deadlineDate.toISOString().split('T')[0];
+                    setValue('deadline', formattedDeadline);
                     setValue('budget', fetchedTask.budget);
                 } else {
                     setError('Task not found.');

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link as RouterLink } from 'react-router-dom'; // Renamed Link to avoid conflict
+import { useParams, Link as RouterLink, useLocation } from 'react-router-dom'; // Renamed Link to avoid conflict, added useLocation
 import useAuth from '../hooks/useAuth'; // May be needed for bidding or other actions
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
@@ -10,42 +10,42 @@ const fetchTaskByIdAPI = (taskId) => {
     const allMockTasksData = [
         {
             _id: '1',
-            title: 'Design Website Mockups',
-            description: 'Need mockups for a new e-commerce site. This involves creating 5 pages: Homepage, Product Listing, Product Detail, Cart, and Checkout. Brand guidelines will be provided. Looking for a modern and clean design.',
+            title: 'Urgent: Design Landing Page Mockup', // Title from HomePage
+            description: 'Need a modern mockup for a new SaaS product landing page. This involves creating 5 pages: Homepage, Product Listing, Product Detail, Cart, and Checkout. Brand guidelines will be provided. Looking for a modern and clean design.',
             category: 'graphic-design',
-            budget: 500,
-            deadline: '2024-08-15',
+            budget: 350, // Budget from HomePage
+            deadline: '2025-06-15', // Deadline from HomePage
             creatorName: 'Alice',
             creatorEmail: 'alice@example.com',
             creatorUid: 'uid-alice',
             creatorPhotoURL: 'https://i.pravatar.cc/150?u=alice@example.com',
             bids: [
-                { _id: 'bid101', bidderName: 'Bob The Builder', bidderEmail: 'bob@example.com', bidderUid: 'uid-bob', bidAmount: 450, proposedDeadline: '2024-08-14', bidDate: '2024-07-20T10:00:00Z', proposalText: 'I have extensive experience in e-commerce design and can deliver high-quality mockups quickly.' },
-                { _id: 'bid102', bidderName: 'Carol Designer', bidderEmail: 'carol@example.com', bidderUid: 'uid-carol', bidAmount: 480, proposedDeadline: '2024-08-12', bidDate: '2024-07-21T14:30:00Z', proposalText: 'My portfolio showcases modern designs. I can start immediately.' },
+                { _id: 'bid101', bidderName: 'Bob The Builder', bidderEmail: 'bob@example.com', bidderUid: 'uid-bob', bidAmount: 330, proposedDeadline: '2025-06-14', bidDate: '2025-05-20T10:00:00Z', proposalText: 'I have extensive experience in e-commerce design and can deliver high-quality mockups quickly.' },
+                { _id: 'bid102', bidderName: 'Carol Designer', bidderEmail: 'carol@example.com', bidderUid: 'uid-carol', bidAmount: 340, proposedDeadline: '2025-06-12', bidDate: '2025-05-21T14:30:00Z', proposalText: 'My portfolio showcases modern designs. I can start immediately.' },
             ]
         },
         {
             _id: '2',
-            title: 'Write Blog Post',
-            description: 'Require a 1000-word blog post on remote work tips. The article should be well-researched, engaging, and SEO-friendly. Target audience is young professionals.',
+            title: 'Quick: Write 500-word Blog Post', // Title from HomePage
+            description: 'Topic: The Future of Remote Work. Needs to be engaging and SEO-friendly. The article should be well-researched. Target audience is young professionals.',
             category: 'writing-translation',
-            budget: 150,
-            deadline: '2024-08-10',
+            budget: 100, // Budget from HomePage
+            deadline: '2025-06-10', // Deadline from HomePage
             creatorName: 'Bob',
             creatorEmail: 'bob@example.com',
             creatorUid: 'uid-bob',
             creatorPhotoURL: 'https://i.pravatar.cc/150?u=bob@example.com',
             bids: [
-                { _id: 'bid201', bidderName: 'Alice Writer', bidderEmail: 'alice@example.com', bidderUid: 'uid-alice', bidAmount: 140, proposedDeadline: '2024-08-09', bidDate: '2024-07-22T09:00:00Z', proposalText: 'Experienced content writer, can provide samples.' },
+                { _id: 'bid201', bidderName: 'Alice Writer', bidderEmail: 'alice@example.com', bidderUid: 'uid-alice', bidAmount: 90, proposedDeadline: '2025-06-09', bidDate: '2025-05-22T09:00:00Z', proposalText: 'Experienced content writer, can provide samples.' },
             ]
         },
         {
             _id: '3',
-            title: 'Develop REST API',
-            description: 'Build a Node.js REST API for user management. Endpoints should include CRUD operations for users, authentication, and authorization. Experience with Express.js and MongoDB preferred.',
+            title: 'Develop Small Express.js API Endpoint', // Title from HomePage
+            description: 'A single endpoint for user data retrieval. Specs provided. Build a Node.js REST API for user management. Endpoints should include CRUD operations for users, authentication, and authorization. Experience with Express.js and MongoDB preferred.',
             category: 'web-development',
-            budget: 1200,
-            deadline: '2024-09-01',
+            budget: 200, // Budget from HomePage
+            deadline: '2025-07-01', // Deadline from HomePage
             creatorName: 'Charlie',
             creatorEmail: 'charlie@example.com',
             creatorUid: 'uid-charlie',
@@ -54,26 +54,26 @@ const fetchTaskByIdAPI = (taskId) => {
         },
         {
             _id: '4',
-            title: 'Video Editing for YouTube Channel',
-            description: 'Edit raw footage (approx 30 mins) into 3-5 engaging YouTube videos (5-7 mins each). Includes color correction, adding graphics, and sound mixing.',
-            category: 'video-animation',
-            budget: 300,
-            deadline: '2024-08-25',
+            title: 'Social Media Graphics Pack', // Title from HomePage
+            description: 'Create a pack of 10 social media graphics for an upcoming campaign. Theme and branding guidelines will be provided. Need source files. Edit raw footage (approx 30 mins) into 3-5 engaging YouTube videos (5-7 mins each). Includes color correction, adding graphics, and sound mixing.',
+            category: 'graphic-design', // Category from HomePage (was video-animation)
+            budget: 250, // Budget from HomePage
+            deadline: '2025-07-05', // Deadline from HomePage
             creatorName: 'Diana',
             creatorEmail: 'diana@example.com',
             creatorUid: 'uid-diana',
             creatorPhotoURL: 'https://i.pravatar.cc/150?u=diana@example.com',
             bids: [
-                { _id: 'bid401', bidderName: 'Edward Editor', bidderEmail: 'edward@example.com', bidderUid: 'uid-edward', bidAmount: 280, proposedDeadline: '2024-08-23', bidDate: '2024-07-25T11:00:00Z', proposalText: 'Fast turnaround, professional quality.' },
+                { _id: 'bid401', bidderName: 'Edward Editor', bidderEmail: 'edward@example.com', bidderUid: 'uid-edward', bidAmount: 230, proposedDeadline: '2025-07-04', bidDate: '2025-05-25T11:00:00Z', proposalText: 'Fast turnaround, professional quality.' },
             ]
         },
         {
             _id: '5',
-            title: 'SEO Audit and Strategy',
-            description: 'Perform an SEO audit for an existing e-commerce website and provide a comprehensive strategy document for improvement. Focus on on-page, off-page, and technical SEO.',
-            category: 'digital-marketing',
-            budget: 600,
-            deadline: '2024-09-10',
+            title: 'Proofread Short Story (10 pages)', // Title from HomePage
+            description: 'Looking for grammatical errors, typos, and improvements in flow and clarity for a 10-page short story. Quick turnaround needed. Perform an SEO audit for an existing e-commerce website and provide a comprehensive strategy document for improvement. Focus on on-page, off-page, and technical SEO.',
+            category: 'writing-translation', // Category from HomePage (was digital-marketing)
+            budget: 75, // Budget from HomePage
+            deadline: '2025-06-20', // Deadline from HomePage
             creatorName: 'Edward',
             creatorEmail: 'edward@example.com',
             creatorUid: 'uid-edward',
@@ -82,16 +82,16 @@ const fetchTaskByIdAPI = (taskId) => {
         },
         {
             _id: '6',
-            title: 'Translate Document English to Spanish',
-            description: 'Need a 5-page technical document translated accurately from English to Spanish. The document contains industry-specific terminology, so attention to detail and accuracy is paramount. Previous experience with technical translations preferred.',
-            category: 'writing-translation',
-            budget: 250,
-            deadline: '2025-07-15',
+            title: 'Create Animated Explainer Video', // Match HomePage
+            description: 'A 60-second animated explainer video for a new mobile app. The video should clearly explain the app\'s features and benefits in an engaging way. Style guide and script will be provided.', // Match HomePage description + add detail
+            category: 'video-animation', // Match HomePage
+            budget: 600, // Match HomePage
+            deadline: '2025-06-25', // Match HomePage
             creatorName: 'Fiona',
             creatorEmail: 'fiona@example.com',
             creatorUid: 'uid-fiona',
             creatorPhotoURL: 'https://i.pravatar.cc/150?u=fiona@example.com',
-            bids: [] // No bids yet for this new task
+            bids: []
         },
     ];
     return new Promise((resolve) => {
@@ -130,6 +130,7 @@ const submitBidToBackendAPI = async (bidData, taskId, bidderInfo, authToken) => 
 const TaskDetailPage = () => {
     const { taskId } = useParams(); // Get taskId from URL parameters
     const { user } = useAuth(); // Get current user, might be needed for bidding logic
+    const location = useLocation(); // For redirecting back after login
 
     const [task, setTask] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -199,7 +200,7 @@ const TaskDetailPage = () => {
         setIsSubmittingBid(true);
         const bidData = {
             bidAmount: parseFloat(data.bidAmount),
-            deadline: data.bidDeadline, // Assuming this is the bidder's proposed deadline
+            proposedDeadline: data.bidDeadline, // Changed from 'deadline' to 'proposedDeadline' to match bid object structure
             // proposalText: data.proposalText, // If you add a proposal text field
         };
 
@@ -270,7 +271,7 @@ const TaskDetailPage = () => {
                     <h1 className="card-title text-3xl lg:text-4xl mb-2">{task.title}</h1>
 
                     <div className="mb-3 flex items-center space-x-3">
-                        <span className="badge badge-accent badge-outline mr-2">{task.category}</span>
+                        <span className="badge badge-accent badge-outline mr-2 capitalize">{task.category.replace('-', ' ')}</span>
                         <div className="flex items-center text-sm text-gray-500">
                             {task.creatorPhotoURL && <img src={task.creatorPhotoURL} alt={task.creatorName} className="w-6 h-6 rounded-full mr-2" />}
                             <span>Posted by: {task.creatorName}</span>
@@ -288,7 +289,7 @@ const TaskDetailPage = () => {
                             <p className="text-xl text-primary">${task.budget}</p>
                         </div>
                         <div>
-                            <p className="font-semibold">Deadline:</p>
+                            <p className="font-semibold">Task Deadline:</p>
                             <p>{new Date(task.deadline).toLocaleDateString()}</p>
                         </div>
                     </div>
