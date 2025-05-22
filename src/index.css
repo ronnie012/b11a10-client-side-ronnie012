@@ -1,3 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+/* Custom Swiper Pagination Styles */
+.swiper-pagination-bullet {
+  width: 24px; /* Length of the bar */
+  height: 6px;  /* Thickness of the bar */
+  border-radius: 3px; /* Makes it a rounded bar (half of height) */
+  background-color: #A0AEC0; /* Inactive color (e.g., gray-400) - adjust to your theme */
+  opacity: 0.6;
+  transition: opacity 0.3s, background-color 0.3s, width 0.3s;
+  margin: 0 4px !important; /* Add some spacing between bullets */
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #3B82F6; /* Active color (e.g., blue-500 or your theme's primary color) - adjust to your theme */
+  opacity: 1;
+  width: 32px; /* Optionally make the active bar slightly longer */
+}
+
+/* Ensure Swiper navigation arrows are visible against dark backgrounds if necessary */
+/* You might need to adjust colors based on your theme */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #ffffff; /* White arrows, good for dark overlays */
+}
+.swiper-button-next:after,
+.swiper-button-prev:after {
+ font-size: 1.5rem; /* Adjust size of the arrow icons if needed */
+}
+
