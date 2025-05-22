@@ -11,7 +11,7 @@ export default {
     require("daisyui") // Add DaisyUI plugin
   ],
   daisyui: { // DaisyUI configuration
-    themes: ["light", "dark"], // You can add more themes later
+    themes: ["light", "dark", "night", "black", "bumblebee", "emerald", "cyberpunk", "valentine", "halloween", "garden", "fantasy",  "luxury",  ], // You can add more themes later
     logs: true, // Enable DaisyUI logs for debugging during setup
   },
 }
