@@ -1,131 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink, useLocation } from 'react-router-dom'; // Renamed Link to avoid conflict, added useLocation
-import useAuth from '../hooks/useAuth'; // May be needed for bidding or other actions
+import useAuth from '../hooks/useAuth';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
-
-// Simulate fetching a single task by ID (replace with actual API call later)
-const fetchTaskByIdAPI = (taskId) => {
-    // Mock data - in a real app, this would come from my backend API
-    const allMockTasksData = [
-        {
-            _id: '1',
-            title: 'Urgent: Design Landing Page Mockup', // Title from HomePage
-            description: 'Need a modern mockup for a new SaaS product landing page. This involves creating 5 pages: Homepage, Product Listing, Product Detail, Cart, and Checkout. Brand guidelines will be provided. Looking for a modern and clean design.',
-            category: 'graphic-design',
-            budget: 350, // Budget from HomePage
-            deadline: '2025-06-15', // Deadline from HomePage
-            creatorName: 'Alice',
-            creatorEmail: 'alice@example.com',
-            creatorUid: 'uid-alice',
-            creatorPhotoURL: 'https://i.pravatar.cc/150?u=alice@example.com',
-            bids: [
-                { _id: 'bid101', bidderName: 'Bob The Builder', bidderEmail: 'bob@example.com', bidderUid: 'uid-bob', bidAmount: 330, proposedDeadline: '2025-06-14', bidDate: '2025-05-20T10:00:00Z', proposalText: 'I have extensive experience in e-commerce design and can deliver high-quality mockups quickly.' },
-                { _id: 'bid102', bidderName: 'Carol Designer', bidderEmail: 'carol@example.com', bidderUid: 'uid-carol', bidAmount: 340, proposedDeadline: '2025-06-12', bidDate: '2025-05-21T14:30:00Z', proposalText: 'My portfolio showcases modern designs. I can start immediately.' },
-            ]
-        },
-        {
-            _id: '2',
-            title: 'Quick: Write 500-word Blog Post', // Title from HomePage
-            description: 'Topic: The Future of Remote Work. Needs to be engaging and SEO-friendly. The article should be well-researched. Target audience is young professionals.',
-            category: 'writing-translation',
-            budget: 100, // Budget from HomePage
-            deadline: '2025-06-10', // Deadline from HomePage
-            creatorName: 'Bob',
-            creatorEmail: 'bob@example.com',
-            creatorUid: 'uid-bob',
-            creatorPhotoURL: 'https://i.pravatar.cc/150?u=bob@example.com',
-            bids: [
-                { _id: 'bid201', bidderName: 'Alice Writer', bidderEmail: 'alice@example.com', bidderUid: 'uid-alice', bidAmount: 90, proposedDeadline: '2025-06-09', bidDate: '2025-05-22T09:00:00Z', proposalText: 'Experienced content writer, can provide samples.' },
-            ]
-        },
-        {
-            _id: '3',
-            title: 'Develop Small Express.js API Endpoint', // Title from HomePage
-            description: 'A single endpoint for user data retrieval. Specs provided. Build a Node.js REST API for user management. Endpoints should include CRUD operations for users, authentication, and authorization. Experience with Express.js and MongoDB preferred.',
-            category: 'web-development',
-            budget: 200, // Budget from HomePage
-            deadline: '2025-07-01', // Deadline from HomePage
-            creatorName: 'Charlie',
-            creatorEmail: 'charlie@example.com',
-            creatorUid: 'uid-charlie',
-            creatorPhotoURL: 'https://i.pravatar.cc/150?u=charlie@example.com',
-            bids: [] // No bids yet for this task
-        },
-        {
-            _id: '4',
-            title: 'Social Media Graphics Pack', // Title from HomePage
-            description: 'Create a pack of 10 social media graphics for an upcoming campaign. Theme and branding guidelines will be provided. Need source files. Edit raw footage (approx 30 mins) into 3-5 engaging YouTube videos (5-7 mins each). Includes color correction, adding graphics, and sound mixing.',
-            category: 'graphic-design', // Category from HomePage (was video-animation)
-            budget: 250, // Budget from HomePage
-            deadline: '2025-07-05', // Deadline from HomePage
-            creatorName: 'Diana',
-            creatorEmail: 'diana@example.com',
-            creatorUid: 'uid-diana',
-            creatorPhotoURL: 'https://i.pravatar.cc/150?u=diana@example.com',
-            bids: [
-                { _id: 'bid401', bidderName: 'Edward Editor', bidderEmail: 'edward@example.com', bidderUid: 'uid-edward', bidAmount: 230, proposedDeadline: '2025-07-04', bidDate: '2025-05-25T11:00:00Z', proposalText: 'Fast turnaround, professional quality.' },
-            ]
-        },
-        {
-            _id: '5',
-            title: 'Proofread Short Story (10 pages)', // Title from HomePage
-            description: 'Looking for grammatical errors, typos, and improvements in flow and clarity for a 10-page short story. Quick turnaround needed. Perform an SEO audit for an existing e-commerce website and provide a comprehensive strategy document for improvement. Focus on on-page, off-page, and technical SEO.',
-            category: 'writing-translation', // Category from HomePage (was digital-marketing)
-            budget: 75, // Budget from HomePage
-            deadline: '2025-06-20', // Deadline from HomePage
-            creatorName: 'Edward',
-            creatorEmail: 'edward@example.com',
-            creatorUid: 'uid-edward',
-            creatorPhotoURL: 'https://i.pravatar.cc/150?u=edward@example.com',
-            bids: []
-        },
-        {
-            _id: '6',
-            title: 'Create Animated Explainer Video', // Match HomePage
-            description: 'A 60-second animated explainer video for a new mobile app. The video should clearly explain the app\'s features and benefits in an engaging way. Style guide and script will be provided.', // Match HomePage description + add detail
-            category: 'video-animation', // Match HomePage
-            budget: 600, // Match HomePage
-            deadline: '2025-06-25', // Match HomePage
-            creatorName: 'Fiona',
-            creatorEmail: 'fiona@example.com',
-            creatorUid: 'uid-fiona',
-            creatorPhotoURL: 'https://i.pravatar.cc/150?u=fiona@example.com',
-            bids: []
-        },
-    ];
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            const task = allMockTasksData.find(t => t._id === taskId);
-            resolve(task); // Resolve with the task or undefined if not found
-        }, 500); // Simulate network delay
-    });
-};
-
-// Simulate submitting a bid to the backend
-const submitBidToBackendAPI = async (bidData, taskId, bidderInfo, authToken) => {
-    // In a real app, you would use fetch:
-    // const response = await fetch(`/api/tasks/${taskId}/bids`, { // Your backend endpoint
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         'Authorization': `Bearer ${authToken}` // If your API requires auth
-    //     },
-    //     body: JSON.stringify({ ...bidData, bidderUid: bidderInfo.uid, bidderEmail: bidderInfo.email })
-    // });
-    // if (!response.ok) {
-    //     const errorData = await response.json().catch(() => ({ message: 'Failed to submit bid and parse error' }));
-    //     throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-    // }
-    // return await response.json();
-
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            console.log('Simulating API call to submit bid:', { taskId, ...bidData, bidderInfo, authToken });
-            resolve({ bidId: `mock_bid_${Date.now()}`, ...bidData });
-        }, 1000);
-    });
-};
+import { getTaskById, submitBid } from '../services/taskService'; // Import from our service
 
 const TaskDetailPage = () => {
     const { taskId } = useParams(); // Get taskId from URL parameters
@@ -154,20 +32,11 @@ const TaskDetailPage = () => {
             try {
                 setLoading(true);
                 setError(null);
-                // When backend is ready, replace fetchTaskByIdAPI(taskId) with:
-                // const response = await fetch(`/api/tasks/${taskId}`); // Your actual API endpoint
-                // if (!response.ok) {
-                //     if (response.status === 404) throw new Error('Task not found');
-                //     throw new Error(`HTTP error! status: ${response.status}`);
-                // }
-                // const data = await response.json();
-                // setTask(data);
-
-                const data = await fetchTaskByIdAPI(taskId);
+                const data = await getTaskById(taskId); // Use the service function
                 if (data) {
                     setTask(data);
                 } else {
-                    setError('Task not found.');
+                    setError('Task not found. It might have been deleted or the ID is incorrect.');
                 }
 
             } catch (err) {
@@ -200,14 +69,20 @@ const TaskDetailPage = () => {
         setIsSubmittingBid(true);
         const bidData = {
             bidAmount: parseFloat(data.bidAmount),
-            proposedDeadline: data.bidDeadline, // Changed from 'deadline' to 'proposedDeadline' to match bid object structure
-            // proposalText: data.proposalText, // If you add a proposal text field
+            proposedDeadline: data.bidDeadline,
+            // proposalText: data.proposalText, // Add this if you have a proposalText field in your form
+            // These details will be sent to the backend, which should already expect them
+            bidderEmail: user.email,
+            bidderName: user.displayName || "Anonymous Bidder", // Fallback if displayName is not set
+            bidderUid: user.uid,
         };
 
         try {
             // const idToken = await user.getIdToken(); // For backend auth
-            // await submitBidToBackendAPI(bidData, taskId, { uid: user.uid, email: user.email }, idToken);
-            await submitBidToBackendAPI(bidData, taskId, { uid: user.uid, email: user.email, name: user.displayName }, "mock_auth_token");
+            // The submitBid service function now handles constructing the request
+            // It expects taskId and the bidData object
+            const result = await submitBid(taskId, bidData);
+            console.log('Bid submission result:', result);
 
             // Increment and save user's total bids count
             const newBidsCount = userBidsCount + 1;
@@ -215,9 +90,13 @@ const TaskDetailPage = () => {
             if (user) {
                 localStorage.setItem(`userBidsCount_${user.uid}`, newBidsCount.toString());
             }
-            Swal.fire("Success!", "Your bid has been placed successfully!", "success");
+            Swal.fire("Success!", result.message || "Your bid has been placed successfully!", "success");
             resetBidForm();
-            // TODO: Potentially refresh bids list or update UI
+            // To show the new bid immediately, re-fetch task details
+            // This will include the updated bids array from the server if your POST /bids endpoint returns the updated task or if you make a separate GET
+            const updatedTaskData = await getTaskById(taskId);
+            if (updatedTaskData) setTask(updatedTaskData);
+
         } catch (e) {
             console.error("Error submitting bid:", e);
             Swal.fire({
