@@ -3,7 +3,8 @@ import { useParams, Link as RouterLink, useLocation } from 'react-router-dom'; /
 import useAuth from '../hooks/useAuth';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
-import { getTaskById, submitBid } from '../services/taskService'; // Import from our service
+import { getTaskById } from '../services/taskService'; // submitBid removed
+import { submitBid, getMyBids } from '../services/bidService'; // Import from bidService
 
 const TaskDetailPage = () => {
     const { taskId } = useParams(); // Get taskId from URL parameters
@@ -21,14 +22,17 @@ const TaskDetailPage = () => {
 
     useEffect(() => {
         const getTaskDetails = async () => {
-            // Load user's total bids count from localStorage
+            let token = null;
             if (user) {
-                const storedBidsCount = localStorage.getItem(`userBidsCount_${user.uid}`);
-                if (storedBidsCount) {
-                    setUserBidsCount(parseInt(storedBidsCount, 10));
+                token = await user.getIdToken();
+                try {
+                    const myBidsData = await getMyBids(token);
+                    setUserBidsCount(myBidsData.length);
+                } catch (bidCountError) {
+                    console.error("Failed to fetch user's bid count:", bidCountError);
+                    // setUserBidsCount(0); // Or handle error appropriately
                 }
             }
-
             try {
                 setLoading(true);
                 setError(null);
@@ -38,7 +42,6 @@ const TaskDetailPage = () => {
                 } else {
                     setError('Task not found. It might have been deleted or the ID is incorrect.');
                 }
-
             } catch (err) {
                 console.error("Failed to fetch task details:", err);
                 setError(err.message || 'Failed to load task details.');
@@ -78,22 +81,23 @@ const TaskDetailPage = () => {
         };
 
         try {
-            // const idToken = await user.getIdToken(); // For backend auth
+            const token = await user.getIdToken();
             // The submitBid service function now handles constructing the request
             // It expects taskId and the bidData object
-            const result = await submitBid(taskId, bidData);
+            const result = await submitBid(taskId, bidData, token);
             console.log('Bid submission result:', result);
 
-            // Increment and save user's total bids count
-            const newBidsCount = userBidsCount + 1;
-            setUserBidsCount(newBidsCount);
-            if (user) {
-                localStorage.setItem(`userBidsCount_${user.uid}`, newBidsCount.toString());
+            // Re-fetch user's bids to update count accurately
+            try {
+                const myBidsData = await getMyBids(token);
+                setUserBidsCount(myBidsData.length);
+            } catch (bidCountError) {
+                console.error("Failed to re-fetch user's bid count after submission:", bidCountError);
             }
+
             Swal.fire("Success!", result.message || "Your bid has been placed successfully!", "success");
             resetBidForm();
-            // To show the new bid immediately, re-fetch task details
-            // This will include the updated bids array from the server if your POST /bids endpoint returns the updated task or if you make a separate GET
+            // Re-fetch task details to show the new bid if the backend updates the task's bid list
             const updatedTaskData = await getTaskById(taskId);
             if (updatedTaskData) setTask(updatedTaskData);
 

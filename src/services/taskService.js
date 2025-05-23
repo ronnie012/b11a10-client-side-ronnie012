@@ -64,35 +64,6 @@ export const updateTask = async (taskId, taskData) => {
 
     return response.json(); // Server returns { message: '...', modifiedCount: ... } or the updated task
 };
-
-/**
- * Submits a bid for a task to the backend API.
- * @param {string} taskId - The ID of the task to bid on.
- * @param {Object} bidData - The bid data (e.g., { bidAmount, proposedDeadline, proposalText, bidderEmail, bidderName, bidderUid }).
- * @returns {Promise<Object>} A promise that resolves to the server's response (e.g., success message and bid ID).
- * @throws {Error} If the API request fails.
- */
-export const submitBid = async (taskId, bidData) => {
-    const response = await fetch(`${VITE_API_BASE_URL}/tasks/${taskId}/bids`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            // Add Authorization header if you implement JWT tokens later
-            // 'Authorization': `Bearer ${your_jwt_token}`
-        },
-        body: JSON.stringify(bidData),
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessage = errorData.message || errorData.dev_details || `HTTP error! status: ${response.status}`;
-        console.error("Failed to submit bid:", errorMessage);
-        throw new Error(errorMessage);
-    }
-
-    return response.json(); // Server returns { message: '...', bidId: '...' }
-};
-
 /**
  * Fetches a paginated list of all tasks from the backend API.
  * @param {number} [page=1] - The page number to fetch.
