@@ -117,7 +117,12 @@ const Navbar = () => {
                                 >
                                     <div className="w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"> {/* Added ring for better visibility */}
                                         {user.photoURL ? (
-                                            <img src={user.photoURL} alt={user.displayName || 'User'} />
+                                            <img
+                                                src={user.photoURL.startsWith('https://exampleimage.com')
+                                                    ? `https://i.pravatar.cc/32?u=${user.uid || 'defaultUser'}` // Use a free alternative if it's the problematic URL
+                                                    : user.photoURL // Otherwise, use the original photoURL
+                                                }
+                                                alt={user.displayName || 'User'} />
                                         ) : (
                                             <span className="text-xl">{user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}</span> // Fallback to initial
                                         )}
