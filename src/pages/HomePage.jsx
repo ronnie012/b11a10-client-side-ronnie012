@@ -13,52 +13,19 @@ import 'swiper/css/autoplay';
 // import required modules
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
 
-// Import an icon for categories if desired (e.g., from react-icons)
-// For example: import { FaLaptopCode, FaPaintBrush, FaKeyboard, FaBullhorn, FaVideo } from 'react-icons/fa';
+// Import React Awesome Reveal components
+import { Fade, Slide } from "react-awesome-reveal";
 
-
-// Mock data for tasks - in a real app, this would come from your backend API.
-// Ensure these have deadlines that can be sorted.
-const allMockTasksData = [
-    { _id: '1', title: 'Urgent: Design Landing Page Mockup', description: 'Need a modern mockup for a new SaaS product landing page.', category: 'graphic-design', budget: 350, deadline: '2025-06-15', creatorName: 'Alice', imageUrl: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' }, // Corrected URL
-    { _id: '2', title: 'Quick: Write 500-word Blog Post', description: 'Topic: The Future of Remote Work. Needs to be engaging and SEO-friendly.', category: 'writing-translation', budget: 100, deadline: '2025-06-10', creatorName: 'Bob', imageUrl: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' },
-    { _id: '3', title: 'Develop Small Express.js API Endpoint', description: 'A single endpoint for user data retrieval. Specs provided.', category: 'web-development', budget: 200, deadline: '2025-07-01', creatorName: 'Charlie', imageUrl: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' },
-    { _id: '4', title: 'Social Media Graphics Pack', description: 'Create a pack of 10 social media graphics for an upcoming campaign.', category: 'graphic-design', budget: 250, deadline: '2025-07-05', creatorName: 'Diana', imageUrl: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' },
-    { _id: '5', title: 'Proofread Short Story (10 pages)', description: 'Looking for grammatical errors and flow improvements.', category: 'writing-translation', budget: 75, deadline: '2025-06-20', creatorName: 'Edward', imageUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' },
-    { _id: '6', title: 'Create Animated Explainer Video', description: 'A 60-second animated explainer video for a new mobile app.', category: 'video-animation', budget: 600, deadline: '2025-06-25', creatorName: 'Fiona', imageUrl: 'https://images.unsplash.com/photo-1558507652-2d9626c4e67a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80' },
-];
-
-// Simulate fetching featured tasks (top 3 by deadline)
-const fetchFeaturedTasksAPI = () => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            const sortedTasks = [...allMockTasksData]
-                .sort((a, b) => new Date(a.deadline) - new Date(b.deadline)) 
-                .slice(0, 3); 
-            resolve(sortedTasks);
-        }, 500);
-    });
-};
-
-// Simulate fetching 6 most urgent tasks for the dedicated section
-const fetchSixMostUrgentTasksAPI = () => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            const sortedTasks = [...allMockTasksData]
-                .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
-                .slice(0, 6); // Get top 6
-            resolve(sortedTasks);
-        }, 500);
-    });
-};
+import { FaLaptopCode, FaPaintBrush, FaKeyboard, FaBullhorn, FaVideo, FaPuzzlePiece } from 'react-icons/fa'; // Keep for categories
+import { getAllTasks } from '../services/taskService'; // Import the service function
 
 const MOCK_CATEGORIES = [
-    { name: 'Web Development', slug: 'web-development', description: 'Build and maintain websites and web apps.', icon: 'FaLaptopCode' },
-    { name: 'Graphic Design', slug: 'graphic-design', description: 'Logos, branding, illustrations, and more.', icon: 'FaPaintBrush' },
-    { name: 'Writing & Translation', slug: 'writing-translation', description: 'Content, copywriting, and translation services.', icon: 'FaKeyboard' },
-    { name: 'Digital Marketing', slug: 'digital-marketing', description: 'SEO, social media, and advertising campaigns.', icon: 'FaBullhorn' },
-    { name: 'Video & Animation', slug: 'video-animation', description: 'Editing, animation, and video production.', icon: 'FaVideo' },
-    { name: 'Other', slug: 'other', description: 'Various other tasks and services.', icon: null }, // No specific icon for 'Other'
+    { name: 'Web Development', slug: 'web-development', description: 'Build and maintain websites and web apps.', IconComponent: FaLaptopCode },
+    { name: 'Graphic Design', slug: 'graphic-design', description: 'Logos, branding, illustrations, and more.', IconComponent: FaPaintBrush },
+    { name: 'Writing & Translation', slug: 'writing-translation', description: 'Content, copywriting, and translation services.', IconComponent: FaKeyboard },
+    { name: 'Digital Marketing', slug: 'digital-marketing', description: 'SEO, social media, and advertising campaigns.', IconComponent: FaBullhorn },
+    { name: 'Video & Animation', slug: 'video-animation', description: 'Editing, animation, and video production.', IconComponent: FaVideo },
+    { name: 'Other', slug: 'other', description: 'Various other tasks and services.', IconComponent: FaPuzzlePiece },
 ];
 
 const MOCK_TESTIMONIALS = [
@@ -73,63 +40,86 @@ const HomePage = () => {
     const [bannerTasks, setBannerTasks] = useState([]);
     const [loadingBanner, setLoadingBanner] = useState(true);
     const [featuredSectionTasks, setFeaturedSectionTasks] = useState([]);
-    const [loadingFeaturedSection, setLoadingFeaturedSection] = useState(true);
+    const [loadingFeaturedSection, setLoadingFeaturedSection] = useState(true); // Renamed for clarity
+    const [categorySearchTerm, setCategorySearchTerm] = useState('');
+    const [bannerError, setBannerError] = useState(null);
+    const [featuredError, setFeaturedError] = useState(null);
 
     useEffect(() => {
-        const loadFeaturedTasks = async () => {
+        const loadBannerTasks = async () => {
             try {
                 setLoadingBanner(true);
-                const tasks = await fetchFeaturedTasksAPI();
-                setBannerTasks(tasks);
+                setBannerError(null);
+                const data = await getAllTasks(1, 3); // Fetch page 1, limit 3 for banner
+                setBannerTasks(data.tasks);
             } catch (error) {
-                console.error("Failed to load featured tasks:", error);
+                console.error("Failed to load banner tasks:", error);
+                setBannerError(error.message || "Could not load banner tasks.");
             } finally {
                 setLoadingBanner(false);
             }
         };
-        const loadSixMostUrgent = async () => {
+
+        const loadFeaturedSectionData = async () => { // Renamed function for clarity
             try {
                 setLoadingFeaturedSection(true);
-                const tasks = await fetchSixMostUrgentTasksAPI();
-                setFeaturedSectionTasks(tasks);
+                setFeaturedError(null);
+                const data = await getAllTasks(1, 6); // Fetch page 1, limit 6 for featured section
+                setFeaturedSectionTasks(data.tasks);
             } catch (error) {
-                console.error("Failed to load six most urgent tasks:", error);
+                console.error("Failed to load featured section tasks:", error);
+                setFeaturedError(error.message || "Could not load featured tasks.");
             } finally {
                 setLoadingFeaturedSection(false);
             }
         };
-        loadFeaturedTasks();
-        loadSixMostUrgent();
+        loadBannerTasks();
+        loadFeaturedSectionData();
     }, []);
+
+    const handleCategorySearchChange = (event) => {
+        setCategorySearchTerm(event.target.value);
+    };
+
+    const filteredCategories = MOCK_CATEGORIES.filter(category =>
+        category.name.toLowerCase().includes(categorySearchTerm.toLowerCase())
+    );
+
 
     return (
         <>
-            {/* Banner/Slider Section */}
+            {/* Banner/Slider Section - Not typically animated with scroll reveal as it's usually at the top */}
             {loadingBanner && (
                 <div className="flex justify-center items-center h-[400px] md:h-[500px] lg:h-[600px] mb-12 bg-base-200 rounded-box shadow-lg">
                     <span className="loading loading-spinner loading-lg text-primary" aria-label="Loading banner tasks"></span>
                 </div>
             )}
-            {!loadingBanner && bannerTasks.length > 0 && (
+            {!loadingBanner && bannerError && (
+                <div className="text-center py-10 h-[400px] md:h-[500px] lg:h-[600px] flex flex-col justify-center items-center mb-12 bg-base-200 rounded-box shadow-lg">
+                    <h2 className="text-2xl font-semibold text-error">Error Loading Banner</h2>
+                    <p className="text-red-500">{bannerError}</p>
+                </div>
+            )}
+            {!loadingBanner && !bannerError && bannerTasks.length > 0 && (
                 <Swiper
                     modules={[Navigation, Pagination, Autoplay]}
-                    spaceBetween={0} // No space between slides
-                    slidesPerView={1} // Show one slide at a time
-                    navigation // Enables navigation arrows
-                    pagination={{ clickable: true }} // Enables clickable pagination dots
-                    loop={true} // Enables continuous loop mode
+                    spaceBetween={0}
+                    slidesPerView={1}
+                    navigation
+                    pagination={{ clickable: true }}
+                    loop={true}
                     autoplay={{
-                        delay: 4000, // Autoplay delay in ms
-                        disableOnInteraction: false, // Autoplay will not be disabled after user interactions
+                        delay: 4000,
+                        disableOnInteraction: false,
                     }}
                     className="w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-box shadow-lg mb-12"
                 >
                     {bannerTasks.map((task, index) => (
                         <SwiperSlide key={task._id} className="relative">
-                            <img 
-                                src={task.imageUrl || `https://source.unsplash.com/random/1200x600?sig=${index}&query=technology,office,work,freelance`} 
-                                className="w-full h-full object-cover" 
-                                alt={task.title} 
+                            <img
+                                src={task.imageUrl || `https://placehold.co/1200x600/EFEFEF/31343C?text=Task+Image+Placeholder`}
+                                className="w-full h-full object-cover"
+                                alt={task.title}
                             />
                             <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-center p-4">
                                 <h3 className="text-sm md:text-md font-semibold text-accent mb-2">Ending Soon! Deadline: {new Date(task.deadline).toLocaleDateString()}</h3>
@@ -145,110 +135,132 @@ const HomePage = () => {
                     ))}
                 </Swiper>
             )}
-            {!loadingBanner && bannerTasks.length === 0 && (
-                 <div className="text-center py-10 h-[400px] md:h-[500px] lg:h-[600px] flex flex-col justify-center items-center mb-12 bg-base-200 rounded-box shadow-lg">
+            {!loadingBanner && !bannerError && bannerTasks.length === 0 && (
+                <div className="text-center py-10 h-[400px] md:h-[500px] lg:h-[600px] flex flex-col justify-center items-center mb-12 bg-base-200 rounded-box shadow-lg">
                     <h2 className="text-2xl font-semibold">No featured tasks available right now.</h2>
                     <p className="text-gray-600">Check back later or browse all available tasks.</p>
                     <Link to="/browse-tasks" className="btn btn-primary mt-4">Browse All Tasks</Link>
                 </div>
             )}
-            
+
             <div className="container mx-auto px-4 py-8">
                 {/* Featured Tasks Section */}
                 <section className="mb-16">
-                    <h2 className="text-3xl font-bold mb-8 text-center">Featured Tasks</h2>
+                    <Slide direction="up" triggerOnce={true} duration={500}>
+                        <h2 className="text-3xl font-bold mb-8 text-center">Featured Tasks</h2>
+                    </Slide>
                     {loadingFeaturedSection && (
                         <div className="flex justify-center items-center py-10">
                             <span className="loading loading-spinner loading-lg text-primary" aria-label="Loading featured tasks"></span>
                         </div>
                     )}
-                    {!loadingFeaturedSection && featuredSectionTasks.length > 0 && (
+                    {!loadingFeaturedSection && featuredError && (
+                         <Fade triggerOnce={true}>
+                            <div className="text-center py-10 text-error">
+                                <p>Error loading featured tasks: {featuredError}</p>
+                            </div>
+                        </Fade>
+                    )}
+                    {!loadingFeaturedSection && !featuredError && featuredSectionTasks.length > 0 && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {featuredSectionTasks.map(task => (
-                                <div key={task._id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
-                                    {/* You can add an image here if tasks have one suitable for cards */}
-                                    {/* <figure><img src={task.cardImageUrl || task.imageUrl} alt={task.title} className="h-48 w-full object-cover" /></figure> */}
-                                    <div className="card-body">
-                                        <h3 className="card-title text-xl">{task.title}</h3>
-                                        <p className="text-xs text-gray-400 mb-1">Category: <span className="font-semibold text-gray-600 capitalize">{task.category.replace('-', ' ')}</span></p>
-                                        <p className="text-sm mt-1 mb-3 flex-grow">{task.description.substring(0, 100)}...</p>
-                                        <div className="flex justify-between items-center mt-auto pt-2 border-t border-base-300">
-                                            <div className="text-lg font-bold text-primary">${task.budget}</div>
-                                            <div className="text-xs text-gray-500">Due: {new Date(task.deadline).toLocaleDateString()}</div>
-                                        </div>
-                                        <div className="card-actions justify-end mt-3">
-                                            <Link to={`/task/${task._id}`} className="btn btn-secondary btn-sm">View Details</Link>
+                            {featuredSectionTasks.map((task, index) => (
+                                <Fade key={task._id} delay={index * 100} triggerOnce={true} duration={500}>
+                                    <div className="card h-full bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 flex flex-col">
+                                        <div className="card-body flex flex-col flex-grow">
+                                            <h3 className="card-title text-xl">{task.title}</h3>
+                                            <p className="text-xs text-gray-400 mb-1">Category: <span className="font-semibold text-gray-600 capitalize">{task.category.replace('-', ' ')}</span></p>
+                                            <p className="text-sm mt-1 mb-3 flex-grow">{task.description.substring(0, 100)}...</p>
+                                            <div className="flex justify-between items-center mt-auto pt-2 border-t border-base-300">
+                                                <div className="text-lg font-bold text-primary">${task.budget}</div>
+                                                <div className="text-xs text-gray-500">Due: {new Date(task.deadline).toLocaleDateString()}</div>
+                                            </div>
+                                            <div className="card-actions justify-end mt-3">
+                                                <Link to={`/task/${task._id}`} className="btn btn-secondary btn-sm">View Details</Link>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </Fade>
                             ))}
                         </div>
                     )}
-                    {!loadingFeaturedSection && featuredSectionTasks.length === 0 && (
-                        <div className="text-center py-10">
-                            <p className="text-gray-600">No featured tasks to display at the moment.</p>
-                        </div>
+                    {!loadingFeaturedSection && !featuredError && featuredSectionTasks.length === 0 && (
+                        <Fade triggerOnce={true}>
+                            <div className="text-center py-10">
+                                <p className="text-gray-600">No featured tasks to display at the moment.</p>
+                            </div>
+                        </Fade>
                     )}
                 </section>
 
                 {/* Browse by Category Section */}
                 <section className="mb-16">
-                    <h2 className="text-3xl font-bold mb-8 text-center">Browse by Category</h2>
-                    <div className="mb-8 max-w-lg mx-auto">
-                        <div className="form-control">
-                            <input 
-                                type="text" 
-                                placeholder="Search categories (e.g., Web Development)" 
-                                className="input input-bordered w-full" 
-                                // onChange={(e) => handleCategorySearch(e.target.value)} // Implement search logic if needed
-                            />
+                    <Slide direction="up" triggerOnce={true} duration={500}>
+                        <h2 className="text-3xl font-bold mb-8 text-center">Browse by Category</h2>
+                    </Slide>
+                    <Fade delay={300} triggerOnce={true} duration={500}>
+                        <div className="mb-8 max-w-lg mx-auto">
+                            <div className="form-control">
+                                <input
+                                    type="text"
+                                    placeholder="Search categories (e.g., Web Development)"
+                                    className="input input-bordered w-full"
+                                    value={categorySearchTerm}
+                                    onChange={handleCategorySearchChange}
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {MOCK_CATEGORIES.map(category => (
-                            <Link 
-                                to={`/browse-tasks?category=${category.slug}`} // Future: Link to pre-filtered browse page
-                                key={category.slug} 
-                                className="card bg-base-200 hover:bg-primary hover:text-primary-content transition-all duration-300 shadow-lg hover:shadow-xl"
-                            >
-                                <div className="card-body items-center text-center">
-                                    {/* Placeholder for icon - you can use react-icons here */}
-                                    {/* category.icon && <category.icon className="text-4xl mb-2" /> */}
-                                    <div className="text-4xl mb-2"> {/* Basic text icon placeholder */}
-                                        {category.name.substring(0,1) === 'W' && '💻'}
-                                        {category.name.substring(0,1) === 'G' && '🎨'}
-                                        {category.name.substring(0,1) === 'D' && '📢'}
-                                        {category.name.substring(0,1) === 'V' && '🎬'}
+                    </Fade>
+                    {filteredCategories.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredCategories.map((category, index) => (
+                                <Fade key={category.slug} delay={index * 150 + 500} triggerOnce={true} duration={500}>
+                                <Link
+                                    to={`/browse-tasks?category=${category.slug}`} // Future: Link to pre-filtered browse page
+                                    className="card h-full bg-base-200 hover:bg-primary hover:text-primary-content transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col"
+                                >
+                                    <div className="card-body items-center text-center flex flex-col flex-grow">
+                                        {category.IconComponent && <category.IconComponent className="text-4xl mb-3 text-secondary" />}
+                                        <h3 className="card-title text-lg md:text-xl">{category.name}</h3>
+                                        <p className="text-sm opacity-70 mt-1 flex-grow">{category.description}</p>
                                     </div>
-                                    <h3 className="card-title text-lg md:text-xl">{category.name}</h3>
-                                    <p className="text-sm opacity-70">{category.description}</p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
+                                </Link>
+                            </Fade>
+                            ))}
+                        </div>
+                    ) : (
+                        <Fade triggerOnce={true} duration={500}>
+                            <div className="text-center py-10">
+                                <p className="text-gray-600 text-lg">No categories found matching "{categorySearchTerm}".</p>
+                            </div>
+                        </Fade>
+                    )}
                 </section>
 
                 {/* Testimonial Section */}
                 <section className="mb-16 py-12 bg-base-200 rounded-box shadow-md">
-                    <h2 className="text-3xl font-bold mb-10 text-center">What Our Users Say</h2>
+                    <Slide direction="up" triggerOnce={true} duration={500}>
+                        <h2 className="text-3xl font-bold mb-10 text-center">What Our Users Say</h2>
+                    </Slide>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-8">
-                        {MOCK_TESTIMONIALS.map(testimonial => (
-                            <div key={testimonial.id} className="card bg-base-100 shadow-xl">
-                                <div className="card-body">
-                                    <div className="flex items-center mb-4">
-                                        <div className="avatar mr-4">
-                                            <div className="w-14 h-14 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                                                <img src={testimonial.avatar} alt={testimonial.name} />
+                        {MOCK_TESTIMONIALS.map((testimonial, index) => (
+                            <Fade key={testimonial.id} delay={index * 100} triggerOnce={true} duration={500}>
+                                <div className="card h-full bg-base-100 shadow-xl flex flex-col">
+                                    <div className="card-body flex flex-col flex-grow">
+                                        <div className="flex items-center mb-4">
+                                            <div className="avatar mr-4">
+                                                <div className="w-14 h-14 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                                                    <img src={testimonial.avatar} alt={testimonial.name} />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-lg">{testimonial.name}</h3>
+                                                <p className="text-sm text-base-content">{testimonial.role}</p>
                                             </div>
                                         </div>
-                                        <div>
-                                            <h3 className="font-bold text-lg">{testimonial.name}</h3>
-                                            <p className="text-sm text-gray-500">{testimonial.role}</p>
-                                        </div>
+                                        <p className="italic text-base-content flex-grow">"{testimonial.quote}"</p>
                                     </div>
-                                    <p className="italic text-gray-700">"{testimonial.quote}"</p>
                                 </div>
-                            </div>
+                            </Fade>
                         ))}
                     </div>
                 </section>
