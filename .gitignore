@@ -23,7 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
-
 .vscode
 .env
 
+# Firebase
+.firebase/
