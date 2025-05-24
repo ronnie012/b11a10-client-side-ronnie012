@@ -24,11 +24,17 @@ const UpdateTaskPage = () => {
 
         const loadTask = async () => {
             try {
+                console.log(`UpdateTaskPage: loadTask called. taskId: "${taskId}", user UID: "${user ? user.uid : 'No user'}"`);
                 setLoading(true);
                 setError(null);
                 const fetchedTask = await getTaskById(taskId); // Use service function
+                console.log("UpdateTaskPage: Fetched task data from service:", fetchedTask);
+
                 if (fetchedTask) {
+                    console.log(`UpdateTaskPage: Task found. Task creatorUid: "${fetchedTask.creatorUid}", Current user UID: "${user.uid}"`);
                     if (fetchedTask.creatorUid !== user.uid) {
+                        // This check is important. If creatorUid wasn't stored with the task, or if user.uid is different, this will trigger.
+                        console.warn(`UpdateTaskPage: Authorization failed. Task creatorUid ("${fetchedTask.creatorUid}") does not match current user UID ("${user.uid}").`);
                         Swal.fire("Error!", "You are not authorized to update this task.", "error");
                         navigate('/my-posted-tasks'); // Or to an error page
                         return;
@@ -44,12 +50,13 @@ const UpdateTaskPage = () => {
                     setValue('deadline', formattedDeadline);
                     setValue('budget', fetchedTask.budget);
                 } else {
-                    setError('Task not found.');
+                    console.error(`UpdateTaskPage: Task with ID "${taskId}" not found by getTaskById service. getTaskById returned:`, fetchedTask);
+                    setError(`Task not found (ID: ${taskId}). It might have been deleted or the ID is incorrect.`);
                     Swal.fire("Error!", "Task not found.", "error");
                     navigate('/my-posted-tasks');
                 }
             } catch (err) {
-                console.error("Failed to load task:", err);
+                console.error(`UpdateTaskPage: Error in loadTask for taskId "${taskId}":`, err);
                 setError(err.message || 'Failed to load task details.');
                 Swal.fire("Error!", `Failed to load task: ${err.message}`, "error");
             } finally {
@@ -60,7 +67,7 @@ const UpdateTaskPage = () => {
         if (taskId && user) {
             loadTask();
         }
-    }, [taskId, user, setValue, navigate]);
+    }, [taskId, user, navigate]); // setValue is stable and typically doesn't need to be a dependency for this effect
 
     const onSubmit = async (data) => {
         setIsSubmitting(true);
@@ -73,7 +80,7 @@ const UpdateTaskPage = () => {
         try {
             // const idToken = await user.getIdToken(); // For backend auth
             // The updateTask service function now handles constructing the request
-            const result = await updateTask(taskId, taskDataToUpdate);
+            const result = await updateTask(taskId, taskDataToUpdate, user); // Pass user if service needs to get token
             Swal.fire("Success!", result.message || "Task updated successfully!", "success");
             reset(); // Optionally reset form
             navigate('/my-posted-tasks'); // Navigate back to the list
@@ -103,12 +110,13 @@ const UpdateTaskPage = () => {
                     <label htmlFor="category" className="label"><span className="label-text">Category</span></label>
                     <select id="category" {...register("category", { required: "Category is required" })} className="select select-bordered w-full">
                         <option value="">Select Category</option>
-                        <option value="web-development">Web Development</option>
-                        <option value="graphic-design">Graphic Design</option>
-                        <option value="writing-translation">Writing/Translation</option>
-                        <option value="digital-marketing">Digital Marketing</option>
-                        <option value="video-animation">Video/Animation</option>
-                        <option value="other">Other</option>
+                        {/* Aligned with AddTaskPage.jsx category values */}
+                        <option value="Web Development">Web Development</option>
+                        <option value="Graphic Design">Graphic Design</option>
+                        <option value="Writing & Translation">Writing & Translation</option>
+                        <option value="Digital Marketing">Digital Marketing</option>
+                        <option value="Video & Animation">Video & Animation</option>
+                        <option value="General">General</option>
                     </select>
                     {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message}</p>}
                 </div>

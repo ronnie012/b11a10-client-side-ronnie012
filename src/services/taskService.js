@@ -1,4 +1,4 @@
-const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const VITE_API_BASE_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 if (!VITE_API_BASE_URL) {
     console.error("API base URL is not configured. Please set VITE_API_BASE_URL in your .env file.");
@@ -12,7 +12,11 @@ if (!VITE_API_BASE_URL) {
  * @throws {Error} If the API request fails for reasons other than 404.
  */
 export const getTaskById = async (taskId) => {
-    const response = await fetch(`${VITE_API_BASE_URL}/tasks/${taskId}`);
+    console.log(`taskService.js: getTaskById called for taskId: ${taskId}`);
+    const response = await fetch(`${VITE_API_BASE_URL}/api/v1/tasks/${taskId}`);
+
+    // Log raw response details
+    console.log(`taskService.js: getTaskById - Response for ${taskId} - Status: ${response.status}, OK: ${response.ok}`);
 
     if (!response.ok) {
         if (response.status === 404) {
@@ -41,23 +45,44 @@ export const getTaskById = async (taskId) => {
  * Updates an existing task on the backend API.
  * @param {string} taskId - The ID of the task to update.
  * @param {Object} taskData - The task data to update.
+ * @param {Object} user - The Firebase user object from useAuth, used for getting the ID token.
  * @returns {Promise<Object>} A promise that resolves to the server's response (e.g., success message and updated task).
  * @throws {Error} If the API request fails.
  */
-export const updateTask = async (taskId, taskData) => {
-    const response = await fetch(`${VITE_API_BASE_URL}/tasks/${taskId}`, {
+export const updateTask = async (taskId, taskData, user) => {
+    if (!user) {
+        const authError = "User not authenticated. Cannot update task.";
+        console.error(authError);
+        throw new Error(authError);
+    }
+
+    let token;
+    try {
+        token = await user.getIdToken();
+    } catch (tokenError) {
+        console.error("Failed to get Firebase ID token:", tokenError);
+        throw new Error("Authentication error: Could not retrieve user token.");
+    }
+
+    const response = await fetch(`${VITE_API_BASE_URL}/api/v1/tasks/${taskId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            // Add Authorization header if you implement JWT tokens later
-            // 'Authorization': `Bearer ${your_jwt_token}`
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(taskData),
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessage = errorData.message || errorData.dev_details || `HTTP error! status: ${response.status}`;
+        // Consistent error parsing like in other functions
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorData.dev_details || errorMessage;
+        } catch (e) {
+            // If response is not JSON, use the status text
+            errorMessage = response.statusText || errorMessage;
+        }
         console.error("Failed to update task:", errorMessage);
         throw new Error(errorMessage);
     }
@@ -72,7 +97,7 @@ export const updateTask = async (taskId, taskData) => {
  * @throws {Error} If the API request fails.
  */
 export const getAllTasks = async (page = 1, limit = 10) => {
-    const response = await fetch(`${VITE_API_BASE_URL}/tasks?page=${page}&limit=${limit}`);
+    const response = await fetch(`${VITE_API_BASE_URL}/api/v1/tasks?page=${page}&limit=${limit}`);
 
     if (!response.ok) {
         // For other errors, try to parse the error message from the server

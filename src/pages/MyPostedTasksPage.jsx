@@ -3,50 +3,61 @@ import useAuth from '../hooks/useAuth';
 import { Link } from 'react-router-dom'; // Imported Link
 import Swal from 'sweetalert2';
 
-// Mock data - in a real app, this would come from my backend API
-// This represents all tasks available in the system for simulation purposes.
-const allMockTasksData = [
-    { _id: '1', title: 'Design Website Mockups', description: 'Need mockups for a new e-commerce site.', category: 'graphic-design', budget: 500, deadline: '2024-08-15', creatorName: 'Alice', creatorEmail: 'alice@example.com', creatorUid: 'uid-alice' },
-    { _id: '2', title: 'Write Blog Post', description: 'Require a 1000-word blog post on remote work tips.', category: 'writing-translation', budget: 150, deadline: '2024-08-10', creatorName: 'Bob', creatorEmail: 'bob@example.com', creatorUid: 'uid-bob' },
-    { _id: '3', title: 'Develop REST API', description: 'Build a Node.js REST API for user management.', category: 'web-development', budget: 1200, deadline: '2024-09-01', creatorName: 'Charlie', creatorEmail: 'charlie@example.com', creatorUid: 'uid-charlie' },
-    { _id: '4', title: 'Social Media Campaign Setup', description: 'Setup and manage a social media campaign for a new product.', category: 'digital-marketing', budget: 750, deadline: '2024-08-20', creatorName: 'Charlie', creatorEmail: 'charlie@example.com', creatorUid: 'uid-charlie' },
-    { _id: '5', title: 'Proofread Novel Manuscript', description: 'Looking for an experienced editor to proofread a 80k word novel.', category: 'writing-translation', budget: 400, deadline: '2024-09-15', creatorName: 'Alice', creatorEmail: 'alice@example.com', creatorUid: 'uid-alice' },
-];
+// Removed allMockTasksData as we will fetch from the backend
 
-// Simulate an API call to fetch tasks for a specific user
-const fetchMyTasksAPI = (currentUser) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (!currentUser || !currentUser.uid) {
-                resolve([]); 
-                return;
-            }
-            const userTasks = allMockTasksData.filter(task => task.creatorUid === currentUser.uid);
-            resolve(userTasks);
-        }, 1000); 
+// Fetch tasks for the current user from the backend
+const fetchMyTasksAPI = async (userEmail) => { // Changed parameter from authToken to userEmail
+    const backendUrl = import.meta.env.VITE_BACKEND_API_URL;
+    if (!backendUrl) {
+        throw new Error("Backend API URL is not defined in environment variables.");
+    }
+    // Backend expects creatorEmail as a query parameter for this "no auth" endpoint
+    const response = await fetch(`${backendUrl}/api/v1/tasks/my-posted-tasks?creatorEmail=${encodeURIComponent(userEmail)}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            // Removed Authorization header as this endpoint relies on creatorEmail query param
+        }
     });
+
+    if (!response.ok) {
+        let errorResponseMessage = `HTTP error! status: ${response.status}, URL: ${response.url}`;
+        try {
+            // Attempt to get the raw text of the response
+            const responseText = await response.text();
+            console.error("Backend raw error response for /my-posted-tasks:", responseText);
+            // Try to parse it as JSON, as the backend might still send a JSON error object
+            const errorData = JSON.parse(responseText);
+            if (errorData && errorData.message) {
+                errorResponseMessage = errorData.message;
+            }
+        } catch (e) {
+            // If parsing fails, it means the response was not JSON or was empty.
+            // The raw responseText logged above is then the most valuable piece of information.
+            console.error("Failed to parse backend error response as JSON, or response was not JSON. Raw text logged above.", e);
+        }
+        throw new Error(errorResponseMessage);
+    }
+    return await response.json();
 };
 
-// Simulate deleting a task
+// Delete a task via the backend API
 const deleteTaskAPI = async (taskId, authToken) => {
-    // In a real app, you would use fetch:
-    // const response = await fetch(`/api/tasks/${taskId}`, {
-    //     method: 'DELETE',
-    //     headers: {
-    //         'Authorization': `Bearer ${authToken}`
-    //     }
-    // });
-    // if (!response.ok) {
-    //     const errorData = await response.json().catch(() => ({ message: 'Failed to delete task and parse error' }));
-    //     throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-    // }
-    // return await response.json(); // Or just a success status
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            console.log('Simulating API call to delete task:', { taskId, authToken });
-            resolve({ success: true, message: "Task deleted successfully (simulated)" });
-        }, 500);
+    const backendUrl = import.meta.env.VITE_BACKEND_API_URL;
+    if (!backendUrl) {
+        throw new Error("Backend API URL is not defined in environment variables.");
+    }
+    const response = await fetch(`${backendUrl}/api/v1/tasks/${taskId}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${authToken}`
+        }
     });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to delete task and parse error' }));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+    return await response.json(); // Or handle success response as needed
 };
 
 const MyPostedTasksPage = () => {
@@ -56,24 +67,37 @@ const MyPostedTasksPage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        console.log("MyPostedTasksPage: useEffect triggered. User object:", user ? user.uid : 'No user'); // Diagnostic
+
         if (user) {
             const getMyTasks = async () => {
+                console.log("MyPostedTasksPage: getMyTasks called. User email:", user.email); // Diagnostic
                 try {
                     setLoading(true);
-                    setError(null);
-                    const data = await fetchMyTasksAPI(user); 
+                    setError(null); // Clear previous errors
+                    if (!user.email) {
+                        console.error("MyPostedTasksPage: User email is not available."); // Diagnostic
+                        throw new Error("User email is not available to fetch tasks.");
+                    }
+                    // Pass user's email to the API function
+                    const data = await fetchMyTasksAPI(user.email); 
+                    console.log("MyPostedTasksPage: Fetched tasks data:", data); // Diagnostic
                     setMyTasks(data);
                 } catch (err) {
                     console.error("Failed to fetch user's tasks:", err);
                     setError(err.message || 'Failed to load your tasks. Please try again later.');
+                    setMyTasks([]); // Clear tasks on error to prevent showing stale data
                 } finally {
                     setLoading(false);
                 }
             };
             getMyTasks();
         } else {
+            // Handle user being null (logged out or not yet loaded)
+            console.log("MyPostedTasksPage: No user found, clearing tasks and setting loading to false."); // Diagnostic
             setLoading(false);
-            setMyTasks([]);
+            setMyTasks([]); // Ensure tasks are cleared if user is not present
+            // setError(null); // Optionally clear error if you want to show a "please login" message instead
         }
     }, [user]); 
 
@@ -89,8 +113,8 @@ const MyPostedTasksPage = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    // const idToken = await user.getIdToken(); // For backend auth
-                    await deleteTaskAPI(taskId, "mock_auth_token");
+                    const idToken = await user.getIdToken(); // Get Firebase ID token
+                    await deleteTaskAPI(taskId, idToken);
                     
                     // Update local state to remove the task
                     setMyTasks(prevTasks => prevTasks.filter(task => task._id !== taskId));
@@ -125,7 +149,7 @@ const MyPostedTasksPage = () => {
         );
     }
 
-    if (user && myTasks.length === 0) {
+    if (user && !loading && myTasks.length === 0) { // Added !loading to prevent showing this before fetch completes
         return (
             <div className="container mx-auto px-4 py-8 text-center">
                 <h2 className="text-3xl font-bold mb-6">My Posted Tasks</h2>
@@ -135,10 +159,11 @@ const MyPostedTasksPage = () => {
         );
     }
     
-    if (!user) {
+    if (!user && !loading) { // Added !loading to prevent showing this while auth state might still be loading
          return (
             <div className="container mx-auto px-4 py-8 text-center">
                 <p className="text-lg text-gray-500">Please log in to view your tasks.</p>
+                <Link to="/login" className="btn btn-primary mt-4">Login</Link>
             </div>
          )
     }

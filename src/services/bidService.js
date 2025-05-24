@@ -1,4 +1,4 @@
-const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const VITE_API_BASE_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 if (!VITE_API_BASE_URL) {
     console.error("API base URL is not configured. Please set VITE_API_BASE_URL in your .env file.");

@@ -7,30 +7,24 @@ import useAuth from '../hooks/useAuth';
 // Removed Firestore imports: import { collection, addDoc, serverTimestamp } from "firebase/firestore"; 
 
 // Simulate an API call to the backend to add a task
-const addTaskToBackendAPI = async (taskData, authToken) => {
-    // In a real app, you would use fetch:
-    // const response = await fetch('/api/tasks', { // Your backend endpoint
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         'Authorization': `Bearer ${authToken}` // If your API requires auth
-    //     },
-    //     body: JSON.stringify(taskData)
-    // });
-    // if (!response.ok) {
-    //     const errorData = await response.json().catch(() => ({ message: 'Failed to add task and parse error' }));
-    //     throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-    // }
-    // return await response.json(); // Or handle success response as needed
-
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            console.log('Simulating API call to backend with task data:', taskData);
-            console.log('Simulated auth token (if needed):', authToken);
-            // Simulate a successful response with a mock ID
-            resolve({ id: `mock_task_${Date.now()}`, ...taskData });
-        }, 1000); // Simulate 1 second network delay
+const addTaskToBackendAPI = async (taskData, authToken) => { // authToken is the Firebase ID token
+    const backendUrl = import.meta.env.VITE_BACKEND_API_URL;
+    if (!backendUrl) {
+        throw new Error("Backend API URL is not defined in environment variables.");
+    }
+    const response = await fetch(`${backendUrl}/api/v1/tasks`, { // Your backend endpoint
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}` // Send the Firebase ID token
+        },
+        body: JSON.stringify(taskData)
     });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to add task and parse error' }));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+    return await response.json(); // Assuming backend returns JSON on success
 };
 
 
@@ -55,18 +49,16 @@ const AddTaskPage = () => {
             category: data.category,
             budget: parseFloat(data.budget), // Ensure budget is a number
             deadline: data.deadline, // Ensure date is in a consistent format (e.g., ISO string)
-            // Backend will likely handle creatorUid, creatorEmail, status, createdAt
-            // based on the authenticated user making the request.
-            // However, you might send user.uid if your backend expects it explicitly.
-            // creatorUid: user.uid, 
+            // Explicitly send creator details as backend expects them in the payload
+            creatorName: user.displayName || user.email, // Send display name or email as fallback
+            creatorEmail: user.email, // Add creator's email
+            creatorUid: user.uid,       // Add creator's UID (good practice)
         };
 
         try {
             // When backend is ready, you might get the Firebase ID token for auth
-            // const idToken = await user.getIdToken();
-            // const createdTask = await addTaskToBackendAPI(taskDataForBackend, idToken);
-            
-            const createdTask = await addTaskToBackendAPI(taskDataForBackend, "mock_auth_token_if_needed");
+            const idToken = await user.getIdToken();
+            const createdTask = await addTaskToBackendAPI(taskDataForBackend, idToken);
             
             console.log("Task submitted to backend (simulated), response:", createdTask);
             Swal.fire({
@@ -114,12 +106,12 @@ const AddTaskPage = () => {
                     <label className="label"><span className="label-text">Category</span></label>
                     <select {...register("category", { required: "Category is required" })} className="select select-bordered w-full" disabled={isSubmitting}>
                         <option value="">Select Category</option>
-                        <option value="web-development">Web Development</option>
-                        <option value="graphic-design">Graphic Design</option>
-                        <option value="writing-translation">Writing & Translation</option>
-                        <option value="digital-marketing">Digital Marketing</option>
-                        <option value="video-animation">Video & Animation</option>
-                        <option value="other">Other</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Graphic Design">Graphic Design</option>
+                        <option value="Writing & Translation">Writing & Translation</option>
+                        <option value="Digital Marketing">Digital Marketing</option>
+                        <option value="Video & Animation">Video & Animation</option>
+                        <option value="General">General</option> {/* Changed from "other" to "General" */}
                     </select>
                     {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message}</p>}
                 </div>
