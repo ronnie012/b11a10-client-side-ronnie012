@@ -34,46 +34,77 @@ const MOCK_TESTIMONIALS = [
     { id: 't3', name: 'Mike P.', role: 'Task Poster', quote: "Needed urgent help with a coding task, and found a skilled developer within hours. Highly recommend GigConnect for quick turnarounds!", avatar: 'https://i.pravatar.cc/150?u=mikep' },
 ];
 
+// --- Define your static banner data here ---
+// Replace 'YOUR_IMG BB_BANNER_URL_X' with your actual ImgBB URLs
+const STATIC_BANNER_ITEMS = [
+    { _id: '68315df21e9fee0dd490283a', imageUrl: 'https://i.ibb.co/0pwJ9hYz/banner-1.jpg', title: 'Expert Web Design Solutions', description: 'Crafting beautiful, responsive websites tailored to your needs.', deadline: '2024-12-31', budget: '1500', category: 'Web Development' },
+    { _id: '68315c2c26fa26e4046e330d', imageUrl: 'https://i.ibb.co/BHsBVKvG/banner-2.jpg', title: 'Creative Graphic Design Services', description: 'Logos, branding, and illustrations that captivate and engage.', deadline: '2024-11-30', budget: '500', category: 'Graphic Design' },
+    { _id: '68315b2126fa26e4046e330c', imageUrl: 'https://i.ibb.co/xtZr9m2F/banner-3.jpg', title: 'Digital Marketing Mastery', description: 'Boost your online presence with our expert marketing strategies.', deadline: '2024-10-15', budget: '800', category: 'Digital Marketing' },
+    { _id: '683159b126fa26e4046e330b', imageUrl: 'https://i.ibb.co/tMyQWQL7/banner-4.jpg', title: 'Engaging Video & Animation', description: 'Bring your stories to life with professional video production.', deadline: '2025-01-10', budget: '1200', category: 'Video & Animation' },
+    { _id: '68315d031e9fee0dd4902839', imageUrl: 'https://i.ibb.co/v68kXp59/banner-5.jpg', title: 'Precise Writing & Translation', description: 'High-quality content and accurate translations for global reach.', deadline: '2024-12-01', budget: '300', category: 'Writing & Translation' },
+    { _id: '683157d01e9fee0dd4902838', imageUrl: 'https://i.ibb.co/23GgCGsV/banner-6.jpg', title: 'Custom Software Development', description: 'Tailored software solutions to streamline your business operations.', deadline: '2025-02-28', budget: '2500', category: 'Web Development' },
+    { _id: '6830ea807c32a8f8bb3b9642', imageUrl: 'https://i.ibb.co/99pZhq1F/banner-7.jpg', title: 'Innovative UI/UX Design', description: 'User-centric designs that enhance usability and satisfaction.', deadline: '2024-11-15', budget: '700', category: 'Graphic Design' },
+    { _id: '68311a526b6f95025de6b360', imageUrl: 'https://i.ibb.co/zVr2NSxM/banner-8.jpg', title: 'Solve Your Unique Challenges', description: 'Find experts for any task, big or small. Post your project today!', deadline: '2024-12-20', budget: 'N/A', category: 'Other' },
+];
+
+// --- Define your static featured task data here ---
+// Replace 'YOUR_IMG BB_TASK_CARD_URL_X' with your actual ImgBB URLs
+const STATIC_FEATURED_TASKS = [
+    { _id: '68315df21e9fee0dd490283a', imageUrl: 'https://i.ibb.co/vvqYySgS/task-1.jpg', title: 'Build a Landing Page', description: 'Need a responsive landing page for a new product launch. Figma design provided.', category: 'Web Development', budget: '300', deadline: '2025-08-05' },
+    { _id: 'ftask-2', imageUrl: 'https://i.ibb.co/hFcrkRMk/task-2.jpg', title: 'Logo Design for Startup', description: 'Looking for a modern and minimalist logo for a tech startup.', category: 'Graphic Design', budget: '150', deadline: '2025-07-25' },
+    { _id: 'ftask-3', imageUrl: 'https://i.ibb.co/gbmgfQ4m/task-3.jpg', title: 'Write 5 Blog Posts', description: 'Seeking a writer for 5 SEO-optimized blog posts on digital marketing trends.', category: 'Writing & Translation', budget: '250', deadline: '2025-08-10' },
+    { _id: 'ftask-4', imageUrl: 'https://i.ibb.co/0Rsf21f1/task-4.jpg', title: 'Social Media Campaign Setup', description: 'Help set up and schedule a 1-month social media campaign on Instagram and Facebook.', category: 'Digital Marketing', budget: '200', deadline: '2025-07-30' },
+    { _id: 'ftask-5', imageUrl: 'https://i.ibb.co/xttySkkY/task-5.jpg', title: 'Short Explainer Video Animation', description: 'Create a 30-second animated explainer video for our new app feature.', category: 'Video & Animation', budget: '400', deadline: '2025-08-20' },
+    { _id: 'ftask-6', imageUrl: 'https://i.ibb.co/d4cSb47p/task-6.jpg', title: 'Data Entry & Organization', description: 'Need assistance with organizing and inputting data into a spreadsheet. Attention to detail required.', category: 'Other', budget: '100', deadline: '2025-07-28' },
+    { _id: 'ftask-7', imageUrl: 'https://i.ibb.co/8n5RdGkp/task-7.jpg', title: 'Mobile App UI Mockups', description: 'Design UI mockups for 5 screens of a new mobile application. User flows will be provided.', category: 'Graphic Design', budget: '350', deadline: '2025-08-12' },
+    { _id: 'ftask-8', imageUrl: 'https://i.ibb.co/1JXmS34P/task-8.jpg', title: 'Technical Documentation Review', description: 'Review and edit technical documentation for a software product for clarity and accuracy.', category: 'Writing & Translation', budget: '180', deadline: '2025-08-01' },
+];
 
 
 const HomePage = () => {
-    const [bannerTasks, setBannerTasks] = useState([]);
-    const [loadingBanner, setLoadingBanner] = useState(true);
+    // Banner tasks remain static as per previous setup.
+    // Featured tasks will also be static.
+    // Reverting Featured Tasks to be dynamic
     const [featuredSectionTasks, setFeaturedSectionTasks] = useState([]);
-    const [loadingFeaturedSection, setLoadingFeaturedSection] = useState(true); // Renamed for clarity
-    const [categorySearchTerm, setCategorySearchTerm] = useState('');
-    const [bannerError, setBannerError] = useState(null);
+    const [loadingFeaturedSection, setLoadingFeaturedSection] = useState(true);
     const [featuredError, setFeaturedError] = useState(null);
+    const [categorySearchTerm, setCategorySearchTerm] = useState('');
+    // No need for loading/error states for featured tasks if they are static.
 
     useEffect(() => {
-        const loadBannerTasks = async () => {
-            try {
-                setLoadingBanner(true);
-                setBannerError(null);
-                const data = await getAllTasks(1, 3); // Fetch page 1, limit 3 for banner
-                setBannerTasks(data.tasks);
-            } catch (error) {
-                console.error("Failed to load banner tasks:", error);
-                setBannerError(error.message || "Could not load banner tasks.");
-            } finally {
-                setLoadingBanner(false);
-            }
-        };
-
-        const loadFeaturedSectionData = async () => { // Renamed function for clarity
+        // Banner items are static.
+        
+        // Load dynamic data for Featured Tasks section
+        const loadFeaturedSectionData = async () => {
             try {
                 setLoadingFeaturedSection(true);
                 setFeaturedError(null);
-                const data = await getAllTasks(1, 6); // Fetch page 1, limit 6 for featured section
-                setFeaturedSectionTasks(data.tasks);
+                // Fetch 6 tasks.
+                // IMPORTANT: For "most recent deadlines first" and filtering out past deadlines,
+                // your backend API (called by getAllTasks) needs to handle this.
+                // Example call to backend: getAllTasks({ page: 1, limit: 6, sortBy: 'deadline', sortOrder: 'asc', deadlineFrom: new Date().toISOString() })
+                // The current getAllTasks(1, 6) will just get 6 tasks without specific sorting/filtering by deadline from backend.
+                const data = await getAllTasks(1, 6); 
+                if (data && data.tasks) {
+                    // Client-side filtering/sorting can be a temporary fallback if backend doesn't support it yet.
+                    // However, this is NOT ideal for performance or accuracy with pagination.
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Compare date part only
+
+                    const futureTasks = data.tasks.filter(task => new Date(task.deadline) >= today);
+                    futureTasks.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+                    setFeaturedSectionTasks(futureTasks.slice(0, 6)); // Ensure only 6 are shown
+                } else {
+                    setFeaturedSectionTasks([]);
+                }
             } catch (error) {
                 console.error("Failed to load featured section tasks:", error);
                 setFeaturedError(error.message || "Could not load featured tasks.");
+                setFeaturedSectionTasks([]);
             } finally {
                 setLoadingFeaturedSection(false);
             }
         };
-        loadBannerTasks();
         loadFeaturedSectionData();
     }, []);
 
@@ -89,18 +120,8 @@ const HomePage = () => {
     return (
         <>
             {/* Banner/Slider Section - Not typically animated with scroll reveal as it's usually at the top */}
-            {loadingBanner && (
-                <div className="flex justify-center items-center h-[400px] md:h-[500px] lg:h-[600px] mb-12 bg-base-200 rounded-box shadow-lg">
-                    <span className="loading loading-spinner loading-lg text-primary" aria-label="Loading banner tasks"></span>
-                </div>
-            )}
-            {!loadingBanner && bannerError && (
-                <div className="text-center py-10 h-[400px] md:h-[500px] lg:h-[600px] flex flex-col justify-center items-center mb-12 bg-base-200 rounded-box shadow-lg">
-                    <h2 className="text-2xl font-semibold text-error">Error Loading Banner</h2>
-                    <p className="text-red-500">{bannerError}</p>
-                </div>
-            )}
-            {!loadingBanner && !bannerError && bannerTasks.length > 0 && (
+            {/* Display static banner items */}
+            {STATIC_BANNER_ITEMS.length > 0 ? (
                 <Swiper
                     modules={[Navigation, Pagination, Autoplay]}
                     spaceBetween={0}
@@ -114,28 +135,23 @@ const HomePage = () => {
                     }}
                     className="w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-box shadow-lg mb-12"
                 >
-                    {bannerTasks.map((task, index) => (
+                    {STATIC_BANNER_ITEMS.map((task) => (
                         <SwiperSlide key={task._id} className="relative">
                             <img
-                                src={task.imageUrl || `https://placehold.co/1200x600/EFEFEF/31343C?text=Task+Image+Placeholder`}
-                                className="w-full h-full object-cover"
+                                src={task.imageUrl} // Use imageUrl from static data
+                                className="w-full h-full object-cover" 
                                 alt={task.title}
                             />
                             <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-center p-4">
-                                <h3 className="text-sm md:text-md font-semibold text-accent mb-2">Ending Soon! Deadline: {new Date(task.deadline).toLocaleDateString()}</h3>
+                                {/* Simplified Carousel Content: Title and Subtitle (description) only */}
                                 <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-3 leading-tight">{task.title}</h2>
-                                <p className="text-md md:text-lg text-gray-200 mb-6 max-w-xl hidden sm:block">{task.description.substring(0, 100)}...</p>
-                                <div className="flex items-center space-x-4 mb-6">
-                                    <span className="badge badge-lg badge-secondary">${task.budget}</span>
-                                    <span className="badge badge-lg badge-info capitalize">{task.category.replace('-', ' ')}</span>
-                                </div>
-                                <Link to={`/task/${task._id}`} className="btn btn-primary btn-md md:btn-lg">View Task & Bid</Link>
+                                <p className="text-md md:text-lg text-gray-200 mt-2 mb-6 max-w-xl">{task.description}</p> {/* Added mt-2 for more space below title */}
+                                {/* Removed deadline, budget, category, and button from carousel display */}
                             </div>
                         </SwiperSlide>
                     ))}
                 </Swiper>
-            )}
-            {!loadingBanner && !bannerError && bannerTasks.length === 0 && (
+            ) : (
                 <div className="text-center py-10 h-[400px] md:h-[500px] lg:h-[600px] flex flex-col justify-center items-center mb-12 bg-base-200 rounded-box shadow-lg">
                     <h2 className="text-2xl font-semibold">No featured tasks available right now.</h2>
                     <p className="text-gray-600">Check back later or browse all available tasks.</p>
@@ -149,6 +165,7 @@ const HomePage = () => {
                     <Slide direction="up" triggerOnce={true} duration={500}>
                         <h2 className="text-3xl font-bold mb-8 text-center">Featured Tasks</h2>
                     </Slide>
+                    {/* Display dynamic featured tasks from MongoDB */}
                     {loadingFeaturedSection && (
                         <div className="flex justify-center items-center py-10">
                             <span className="loading loading-spinner loading-lg text-primary" aria-label="Loading featured tasks"></span>
@@ -163,19 +180,38 @@ const HomePage = () => {
                     )}
                     {!loadingFeaturedSection && !featuredError && featuredSectionTasks.length > 0 && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {featuredSectionTasks.map((task, index) => (
-                                <Fade key={task._id} delay={index * 100} triggerOnce={true} duration={500}>
-                                    <div className="card h-full bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 flex flex-col">
+                            {featuredSectionTasks.map((task, index) => ( // Mapping over dynamic data
+                                <Fade key={task._id || index} delay={index * 100} triggerOnce={true} duration={500}>
+                                    <div className="card h-full bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out hover:scale-105 flex flex-col"> {/* Added transition-all, ease-in-out, hover:scale-105. Adjusted scale from 115% to 105% for subtlety */}
+                                        {/* Add image to task card */}
+                                        {/* Using imageUrl from STATIC_FEATURED_TASKS */}
+                                        {task.imageUrl && (
+                                            <figure className="h-48"> {/* Adjust height as needed */}
+                                                <img 
+                                                    src={task.imageUrl} // This will now come from MongoDB task data
+                                                    alt={task.title} 
+                                                    className="w-full h-full object-cover" 
+                                                />
+                                            </figure>
+                                        )}
                                         <div className="card-body flex flex-col flex-grow">
-                                            <h3 className="card-title text-xl">{task.title}</h3>
-                                            <p className="text-xs text-gray-400 mb-1">Category: <span className="font-semibold text-gray-600 capitalize">{task.category.replace('-', ' ')}</span></p>
-                                            <p className="text-sm mt-1 mb-3 flex-grow">{task.description.substring(0, 100)}...</p>
+                                            <h3 className="card-title text-xl">{task.title}</h3> {/* Ensured title is prominent */}
+                                            <p className="text-sm text-base-content opacity-80 mb-1"> {/* Label with good contrast */}
+                                                Category: <span className="font-semibold text-base-content opacity-100 capitalize">{task.category?.replace('-', ' ') || 'N/A'}</span> {/* Value with full opacity */}
+                                            </p>
+                                            <p className="text-base mt-1 mb-3 flex-grow text-base-content opacity-90">{task.description?.substring(0, 100) || 'No description available.'}{task.description && task.description.length > 100 ? '...' : ''}</p> {/* Larger font for description */}
                                             <div className="flex justify-between items-center mt-auto pt-2 border-t border-base-300">
                                                 <div className="text-lg font-bold text-primary">${task.budget}</div>
-                                                <div className="text-xs text-gray-500">Due: {new Date(task.deadline).toLocaleDateString()}</div>
+                                                <div className="text-sm text-base-content opacity-80"> {/* Label with good contrast */}
+                                                    Due: <span className="font-medium text-base-content opacity-100">{new Date(task.deadline).toLocaleDateString()}</span> {/* Value with full opacity */}
+                                                </div>
                                             </div>
                                             <div className="card-actions justify-end mt-3">
-                                                <Link to={`/task/${task._id}`} className="btn btn-secondary btn-sm">View Details</Link>
+                                                {/* 
+                                                    This button now uses the real task._id from MongoDB,
+                                                    so it will correctly link to the task detail page.
+                                                */}
+                                                <Link to={`/task/${task._id}`} className="btn btn-secondary btn-sm">See Details</Link>
                                             </div>
                                         </div>
                                     </div>
@@ -215,8 +251,8 @@ const HomePage = () => {
                             {filteredCategories.map((category, index) => (
                                 <Fade key={category.slug} delay={index * 150 + 500} triggerOnce={true} duration={500}>
                                 <Link
-                                    to={`/browse-tasks?category=${category.slug}`} // Future: Link to pre-filtered browse page
-                                    className="card h-full bg-base-200 hover:bg-primary hover:text-primary-content transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col"
+                                    to={`/browse-tasks?category=${category.slug}`}
+                                    className="card h-full bg-base-200 hover:bg-primary hover:text-primary-content transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 flex flex-col" // Added ease-in-out, hover:scale-105
                                 >
                                     <div className="card-body items-center text-center flex flex-col flex-grow">
                                         {category.IconComponent && <category.IconComponent className="text-4xl mb-3 text-secondary" />}

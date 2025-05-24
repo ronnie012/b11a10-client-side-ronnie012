@@ -6,9 +6,7 @@ import Swal from 'sweetalert2';
 const Navbar = () => {
     const { user, logOut, loading } = useAuth(); // Get user, logOut function, and loading state
     const navigate = useNavigate();
-    const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') || 'light');
-    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-    const avatarLabelRef = useRef(null); // Ref for the avatar label
+    const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') || 'light');    
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', currentTheme);
@@ -17,17 +15,6 @@ const Navbar = () => {
 
     const handleThemeToggle = () => {
         setCurrentTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-    };
-
-    const toggleUserMenu = () => {
-        setIsUserMenuOpen(prevIsOpen => {
-            const newIsOpen = !prevIsOpen;
-            if (!newIsOpen && avatarLabelRef.current) {
-                // If closing the menu, explicitly blur the avatar label
-                avatarLabelRef.current.blur();
-            }
-            return newIsOpen;
-        });
     };
 
     const handleLogout = () => {
@@ -40,7 +27,6 @@ const Navbar = () => {
                     confirmButtonText: 'OK'
                 });
                 navigate('/login'); // Redirect to login page after logout
-                setIsUserMenuOpen(false); // Close dropdown on logout
             })
             .catch(error => {
                 console.error("Logout error:", error);
@@ -102,43 +88,41 @@ const Navbar = () => {
                     </label>
 
                     {/* Auth-dependent section */}
-                    <div style={{ minHeight: '32px' }}> {/* Removed flex items-center as dropdown handles alignment */}
+                    {/* This div wraps the auth content. 
+                        Making it a flex container helps align login/signup buttons on mobile when logged out.
+                        It also ensures the spinner or avatar section is aligned. */}
+                    <div className="flex items-center" style={{ minHeight: '32px' }}> {/* DaisyUI buttons are 3rem/48px high by default, btn-sm is 2rem/32px. minHeight ensures space. */}
                         {loading && !user ? ( // Show spinner only if loading and no user yet (to avoid flash during logout)
                             <span className="loading loading-spinner loading-sm"></span>
                         ) : user ? (
-                            <div className={`dropdown dropdown-end ${isUserMenuOpen ? 'dropdown-open' : ''}`}>
-                                <label 
-                                    ref={avatarLabelRef}
-                                    tabIndex={0} 
-                                    className="btn btn-ghost btn-circle avatar" 
-                                    title={user.displayName || 'User menu'}
-                                    onClick={toggleUserMenu} // Toggle on click
-                                    onBlur={() => setTimeout(() => setIsUserMenuOpen(false), 150)} // Close on blur with a small delay
-                                >
-                                    <div className="w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"> {/* Added ring for better visibility */}
-                                        {user.photoURL ? (
+                            // If user is logged in, show avatar and logout button
+                            <>
+                                <div className="avatar" title={user.displayName || user.email || 'User'}>
+                                    <div className="w-8 h-8 rounded-full ring ring-success ring-offset-base-100 ring-offset-2"> {/* Added ring for better visibility */}
+                                        {/* Show photoURL if it exists, is not empty, and is NOT a pravatar URL */}
+                                        {(user.photoURL && user.photoURL.trim() !== '' && !user.photoURL.startsWith('https://i.pravatar.cc')) ? (
                                             <img
-                                                src={user.photoURL.startsWith('https://exampleimage.com')
-                                                    ? `https://i.pravatar.cc/32?u=${user.uid || 'defaultUser'}` // Use a free alternative if it's the problematic URL
-                                                    : user.photoURL // Otherwise, use the original photoURL
-                                                }
+                                                src={user.photoURL} 
                                                 alt={user.displayName || 'User'} />
                                         ) : (
-                                            <span className="text-xl">{user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}</span> // Fallback to initial
+                                            // Fallback to initial, centered and sized appropriately
+                                            <span className="flex items-center justify-center w-full h-full text-sm font-semibold">
+                                                {user.displayName ? user.displayName.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U')}
+                                            </span>
                                         )}
                                     </div>
-                                </label>
-                                <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3  z-[1] p-2 shadow bg-green-300 rounded-box w-52"
-                                    // No onClick needed here if items navigate or call functions that close the menu
-                                >
-                                    <li className="px-4 py-2 text-lg font-semibold">{user.displayName || user.email}</li>
-                                    <li><button onClick={handleLogout} className="btn btn-sm btn-ghost text-error text-bold text-lg w-full pl-4 justify-start">Logout</button></li>
-                                </ul>
-                            </div>
+                                </div>
+                                <button 
+                                    onClick={handleLogout} 
+                                    className="btn btn-sm btn-outline ml-2" // Changed back to btn-sm for consistency
+                                >Logout</button>
+                            </>
                         ) : (
                             <>
-                                <Link to="/login" className="btn btn-sm btn-outline btn-primary mr-2">Login</Link>
-                                <Link to="/signup" className="btn btn-sm btn-primary">Signup</Link>
+                                {/* For logged-out state, ensure buttons are side-by-side */}
+                                {/* The parent div is now "flex items-center", so these Links will be flex items. */}
+                                <Link to="/login" className="btn btn-sm btn-outline btn-primary">Login</Link>
+                                <Link to="/signup" className="btn btn-sm btn-primary ml-2">Signup</Link> {/* Added ml-2 for spacing */}
                             </>
                         )}
                     </div>
