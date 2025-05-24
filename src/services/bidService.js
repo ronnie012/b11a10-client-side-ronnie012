@@ -14,7 +14,7 @@ if (!VITE_API_BASE_URL) {
  * @throws {Error} If the API request fails.
  */
 export const submitBid = async (taskId, bidData, token) => {
-    const response = await fetch(`${VITE_API_BASE_URL}/tasks/${taskId}/bids`, {
+    const response = await fetch(`${VITE_API_BASE_URL}/api/v1/tasks/${taskId}/bids`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export const submitBid = async (taskId, bidData, token) => {
  * @throws {Error} If the API request fails.
  */
 export const getBidsForTask = async (taskId, token) => {
-    const response = await fetch(`${VITE_API_BASE_URL}/tasks/${taskId}/bids`, {
+    const response = await fetch(`${VITE_API_BASE_URL}/api/v1/tasks/${taskId}/bids`, {
         headers: {
             'Authorization': `Bearer ${token}`,
         },
@@ -67,14 +67,17 @@ export const getBidsForTask = async (taskId, token) => {
 
 /**
  * Fetches all bids made by the currently authenticated user.
+ * The backend endpoint /api/v1/my-bids expects a bidderEmail query parameter.
  * @param {string} token - The Firebase ID token for authorization.
+ * @param {string} userEmail - The email of the user whose bids are to be fetched.
  * @returns {Promise<Array>} A promise that resolves to an array of the user's bids.
  * @throws {Error} If the API request fails.
  */
-export const getMyBids = async (token) => {
-    // Assuming your backend has an endpoint like /api/v1/me/bids or /api/v1/bids?bidderUid=currentUserUid
-    // For this example, let's assume /api/v1/me/bids which infers user from token
-    const response = await fetch(`${VITE_API_BASE_URL}/me/bids`, {
+export const getMyBids = async (token, userEmail) => {
+    if (!userEmail) {
+        throw new Error("User email is required to fetch 'my bids'.");
+    }
+    const response = await fetch(`${VITE_API_BASE_URL}/api/v1/my-bids?bidderEmail=${encodeURIComponent(userEmail)}`, {
         headers: {
             'Authorization': `Bearer ${token}`,
         },
@@ -94,7 +97,7 @@ export const getMyBids = async (token) => {
     return response.json(); // Expects an array of bids
 };
 
-// You can add other bid-related functions here as per your requirements, such as:
+//can add other bid-related functions here as per your requirements, such as:
 // - acceptBid(bidId, token)
 // - rejectBid(bidId, token)
 // - withdrawBid(bidId, token)

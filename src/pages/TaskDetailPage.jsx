@@ -16,29 +16,56 @@ const TaskDetailPage = () => {
     const [error, setError] = useState(null);
     const [userBidsCount, setUserBidsCount] = useState(0);
     const [isSubmittingBid, setIsSubmittingBid] = useState(false);
+    const [hasUserBidOnThisTask, setHasUserBidOnThisTask] = useState(false);
 
     const { register: registerBid, handleSubmit: handleBidSubmit, formState: { errors: bidErrors }, reset: resetBidForm } = useForm();
 
 
     useEffect(() => {
         const getTaskDetails = async () => {
+            setLoading(true);
+            setError(null);
+            setHasUserBidOnThisTask(false); // Reset for the current task
+
             let token = null;
             if (user) {
                 token = await user.getIdToken();
                 try {
-                    const myBidsData = await getMyBids(token);
+                    if (!user.email) {
+                        throw new Error("User email is not available to fetch bids.");
+                    }
+                    const myBidsData = await getMyBids(token, user.email);
                     setUserBidsCount(myBidsData.length);
                 } catch (bidCountError) {
                     console.error("Failed to fetch user's bid count:", bidCountError);
-                    // setUserBidsCount(0); // Or handle error appropriately
+                    setUserBidsCount(0); // Reset or set to a state indicating an error
                 }
+            } else {
+                setUserBidsCount(0); // Reset bid count if user logs out
             }
             try {
-                setLoading(true);
-                setError(null);
                 const data = await getTaskById(taskId); // Use the service function
+                console.log('[useEffect] Raw data from getTaskById:', JSON.parse(JSON.stringify(data))); // Log a deep copy
                 if (data) {
                     setTask(data);
+                    // Check if the current user has already bid on this task
+                    console.log('[useEffect] Checking bids for user.uid:', user?.uid, 'in data.bids:', data.bids);
+                    if (user && user.uid) {
+                        // Log the bidderUid of the first bid for comparison, if bids exist
+                        if (data.bids && data.bids.length > 0) {
+                            console.log('[useEffect] First bid object in data.bids:', JSON.parse(JSON.stringify(data.bids[0])));
+                        }
+                        const userHasBid = data.bids?.some(bid => bid.bidderUid === user.uid);
+                        console.log(`[useEffect] User ${user.uid} has bid on this task (some check): ${userHasBid}`);
+                        if (userHasBid) {
+                            setHasUserBidOnThisTask(true);
+                        } else {
+                            setHasUserBidOnThisTask(false);
+                        }
+                    } else {
+                        console.log('[useEffect] User or user.uid not available for bid check, setting hasUserBidOnThisTask to false.');
+                        setHasUserBidOnThisTask(false); // User not logged in or uid not ready
+                    }
                 } else {
                     setError('Task not found. It might have been deleted or the ID is incorrect.');
                 }
@@ -68,10 +95,14 @@ const TaskDetailPage = () => {
             Swal.fire("Error!", "You cannot bid on your own task.", "error");
             return;
         }
+        if (hasUserBidOnThisTask) {
+            Swal.fire("Info!", "You have already placed a bid on this task.", "info");
+            return;
+        }
 
         setIsSubmittingBid(true);
         const bidData = {
-            bidAmount: parseFloat(data.bidAmount),
+            biddingAmount: parseFloat(data.bidAmount), // Changed key to biddingAmount
             proposedDeadline: data.bidDeadline,
             // proposalText: data.proposalText, // Add this if you have a proposalText field in your form
             // These details will be sent to the backend, which should already expect them
@@ -87,19 +118,31 @@ const TaskDetailPage = () => {
             const result = await submitBid(taskId, bidData, token);
             console.log('Bid submission result:', result);
 
-            // Re-fetch user's bids to update count accurately
+            // Optimistically update the bid count on the UI for immediate feedback
+            setUserBidsCount(prevCount => prevCount + 1);
+
+            // Then, attempt to re-fetch the accurate count from the server for synchronization
             try {
-                const myBidsData = await getMyBids(token);
-                setUserBidsCount(myBidsData.length);
+                if (!user.email) {
+                    throw new Error("User email is not available to re-sync bid count.");
+                }
+                const myBidsData = await getMyBids(token, user.email);
+                setUserBidsCount(myBidsData.length); // Sync with actual server count
             } catch (bidCountError) {
-                console.error("Failed to re-fetch user's bid count after submission:", bidCountError);
+                console.error("Failed to re-sync user's bid count after submission:", bidCountError);
+                // If sync fails, the count remains optimistically updated.
+                // You might consider more complex error handling or reverting the optimistic update
+                // if strict accuracy immediately after sync failure is critical.
             }
 
             Swal.fire("Success!", result.message || "Your bid has been placed successfully!", "success");
             resetBidForm();
             // Re-fetch task details to show the new bid if the backend updates the task's bid list
+            console.log('[onBidSubmit] Re-fetching task details after bid...');
             const updatedTaskData = await getTaskById(taskId);
+            console.log('[onBidSubmit] Updated task data from getTaskById:', JSON.parse(JSON.stringify(updatedTaskData))); // Log a deep copy
             if (updatedTaskData) setTask(updatedTaskData);
+            setHasUserBidOnThisTask(true); // Mark that user has now bid on this task
 
         } catch (e) {
             console.error("Error submitting bid:", e);
@@ -184,7 +227,9 @@ const TaskDetailPage = () => {
                             <p className="text-gray-600">Please <RouterLink to="/login" state={{ from: location }} className="link link-primary">login</RouterLink> to place a bid.</p>
                         ) : user.uid === task.creatorUid ? (
                             <p className="text-gray-600">You cannot bid on your own task.</p>
-                        ) : (
+                        ) : hasUserBidOnThisTask ? (
+                            <p className="text-success">You have already placed a bid on this task.</p>
+                        ) :  (
                             <form onSubmit={handleBidSubmit(onBidSubmit)} className="space-y-4">
                                 <div>
                                     <label htmlFor="bidAmount" className="label"><span className="label-text">Your Bid Amount ($)</span></label>
@@ -225,15 +270,25 @@ const TaskDetailPage = () => {
                                 {task.bids.map(bid => (
                                     <div key={bid._id} className="card card-compact bg-base-200 shadow">
                                         <div className="card-body">
-                                            <div className="flex justify-between items-start">
-                                                <h4 className="card-title text-lg">{bid.bidderName}</h4>
-                                                <span className="text-lg font-semibold text-secondary">${bid.bidAmount}</span>
+                                            {/* Bidder Info - Assuming bidderName is now stored with the bid */}
+                                            {/* TODO: Future enhancement - fetch avatar if not stored with bid */}
+                                            <div className="flex items-center mb-2">
+                                                {/* Placeholder for avatar if you add it later */}
+                                                {/* <img src={bid.bidderPhotoURL || 'default-avatar.png'} alt={bid.bidderName || 'Bidder'} className="w-8 h-8 rounded-full mr-2" /> */}
+                                                <h4 className="card-title text-lg">{bid.bidderName || bid.bidderEmail || 'Anonymous Bidder'}</h4>
+                                            </div>
+
+                                            <div className="flex items-baseline"> {/* Changed from justify-between and items-start */}
+                                                <p className="text-sm mr-2">Proposed Bid:</p> {/* Added margin for spacing */}
+                                                <span className="text-lg font-semibold text-secondary">
+                                                    ${typeof bid.biddingAmount === 'number' ? bid.biddingAmount.toFixed(2) : 'N/A'}
+                                                </span>
                                             </div>
                                             <p className="text-xs text-gray-500">
-                                                Proposed Deadline: {new Date(bid.proposedDeadline).toLocaleDateString()} |
-                                                Bid Placed: {new Date(bid.bidDate).toLocaleDateString()}
+                                                Proposed Deadline: {bid.bidderDeadline ? new Date(bid.bidderDeadline).toLocaleDateString() : 'Not specified'} |
+                                                Bid Placed: {bid.bidPlacedAt ? new Date(bid.bidPlacedAt).toLocaleDateString() : 'Unknown'}
                                             </p>
-                                            {bid.proposalText && <p className="text-sm mt-2">{bid.proposalText}</p>}
+                                            {bid.comment && <p className="text-sm mt-2">Comment: {bid.comment}</p>}
                                             {/* TODO: Add "Accept Bid" button for task creator */}
                                         </div>
                                     </div>
