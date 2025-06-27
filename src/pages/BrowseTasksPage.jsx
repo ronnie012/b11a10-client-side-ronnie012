@@ -62,8 +62,8 @@ const BrowseTasksPage = () => {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h2 className="text-3xl font-bold mb-2 text-center">
+        <div className="container mx-auto px-4 py-0">
+            <h2 className="text-4xl font-bold mb-8 text-center">
                 {displayCategoryName(categoryFilter)}
             </h2>
             {categoryFilter && (
@@ -72,7 +72,7 @@ const BrowseTasksPage = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredTasks.length > 0 ? filteredTasks.map(task => (
-                    <div key={task._id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 flex flex-col">
+                    <div key={task._id} className="card h-full bg-base-200 border border-base-300 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out hover:scale-105 flex flex-col">
                         <div className="card-body flex-grow"> {/* Added flex-grow to card-body */}
                             <h3 className="card-title text-xl lg:text-2xl">{task.title}</h3>
                             <p className="text-xs text-gray-400 mb-1">Category: <span className="font-semibold text-gray-600 capitalize">{task.category.replace('-', ' ')}</span></p>

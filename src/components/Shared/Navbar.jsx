@@ -8,10 +8,34 @@ const Navbar = () => {
     const navigate = useNavigate();
     const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('theme') || 'light');    
 
+    // State for scroll behavior
+    const [isVisible, setIsVisible] = useState(true);
+    const lastScrollY = useRef(0);
+
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', currentTheme);
         localStorage.setItem('theme', currentTheme);
     }, [currentTheme]);
+
+    // Scroll effect for navbar visibility
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > lastScrollY.current) {
+                // Scrolling down
+                setIsVisible(false);
+            } else {
+                // Scrolling up
+                setIsVisible(true);
+            }
+            lastScrollY.current = window.scrollY;
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
 
     const handleThemeToggle = () => {
         setCurrentTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
@@ -45,8 +69,7 @@ const Navbar = () => {
             <li><NavLink to="/browse-tasks" className={({ isActive }) => isActive ? "text-primary font-bold" : ""}>Browse Tasks</NavLink></li>
             {user && (
                 <>
-                    <li><NavLink to="/add-task" className={({ isActive }) => isActive ? "text-primary font-bold" : ""}>Add Task</NavLink></li>
-                    <li><NavLink to="/my-posted-tasks" className={({ isActive }) => isActive ? "text-primary font-bold" : ""}>My Posted Tasks</NavLink></li>
+                    <li><NavLink to="/dashboard" end className={({ isActive }) => isActive ? "text-primary font-bold" : ""}>Dashboard</NavLink></li>
                 </>
             )}
         </>
@@ -54,7 +77,7 @@ const Navbar = () => {
 
 
     return (
-        <header className="bg-base-100 shadow-md sticky top-0 z-50"> {/* Changed bg-base-200 to bg-base-100 for better theme contrast, added sticky, top-0, z-50 */}
+        <header className={`bg-base-100/20 backdrop-blur-md shadow-md rounded-xl max-w-[1220px] mx-auto px-4 sticky top-0 z-50 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}> {/* Added transition and transform classes */}
             <div className="navbar max-w-7xl mx-auto">
                 <div className="navbar-start"> {/* Changed flex-1 to navbar-start */}
                     <div className="dropdown">
@@ -114,7 +137,7 @@ const Navbar = () => {
                                 </div>
                                 <button 
                                     onClick={handleLogout} 
-                                    className="btn btn-sm btn-outline ml-2" // Changed back to btn-sm for consistency
+                                    className="btn btn-sm btn-outline btn-primary ml-2" // Ensure attractive hover in both modes
                                 >Logout</button>
                             </>
                         ) : (

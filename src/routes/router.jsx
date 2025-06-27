@@ -9,13 +9,14 @@ import LoginPage from '../pages/LoginPage.jsx';
 import SignupPage from '../pages/SignupPage.jsx';
 import TaskDetailPage from '../pages/TaskDetailPage.jsx';
 import UpdateTaskPage from '../pages/UpdateTaskPage.jsx';
+import DashboardPage from '../pages/DashboardPage.jsx';
 import ErrorPage from '../pages/ErrorPage.jsx';
 import PrivateRoute from './PrivateRoute.jsx';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />, // App is the layout component with Navbar, Outlet, Footer
+    element: <App />,
     // errorElement: <ErrorPage />, // Optional: Add an error page for route errors
     children: [
       {
@@ -27,32 +28,34 @@ const router = createBrowserRouter([
         element: <BrowseTasksPage />,
       },
       {
-        path: "/add-task",
-        element: (
-          <PrivateRoute>
-            <AddTaskPage />
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "/my-posted-tasks",
-        element: (
-          <PrivateRoute>
-            <MyPostedTasksPage />
-          </PrivateRoute>
-        ),
-      },
-      {
         path: "/task/:taskId", // Dynamic route for task details
         element: <TaskDetailPage />, // Public for now, can be made private if needed
       },
       {
-        path: "/update-task/:taskId", // Route for updating a task
+        path: "/dashboard",
         element: (
           <PrivateRoute>
-            <UpdateTaskPage />
+            <DashboardPage />
           </PrivateRoute>
         ),
+        children: [
+          {
+            index: true,
+            element: <MyPostedTasksPage />,
+          },
+          {
+            path: "add-task",
+            element: <AddTaskPage />,
+          },
+          {
+            path: "my-posted-tasks",
+            element: <MyPostedTasksPage />,
+          },
+          {
+            path: "update-task/:taskId",
+            element: <UpdateTaskPage />,
+          },
+        ],
       },
       {
         path: "/login",

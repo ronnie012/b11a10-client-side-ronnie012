@@ -133,7 +133,7 @@ const HomePage = () => {
                         delay: 4000,
                         disableOnInteraction: false,
                     }}
-                    className="w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-box shadow-lg mb-12"
+                    className="max-w-[1220px] h-[400px] md:h-[500px] lg:h-[500px] rounded-box shadow-lg mb-8"
                 >
                     {STATIC_BANNER_ITEMS.map((task) => (
                         <SwiperSlide key={task._id} className="relative">
@@ -168,7 +168,7 @@ const HomePage = () => {
                     {/* Display dynamic featured tasks from MongoDB */}
                     {loadingFeaturedSection && (
                         <div className="flex justify-center items-center py-10">
-                            <span className="loading loading-spinner loading-lg text-primary" aria-label="Loading featured tasks"></span>
+                            <span className="loading loading-spinner loading-lg text-success" aria-label="Loading featured tasks"></span>
                         </div>
                     )}
                     {!loadingFeaturedSection && featuredError && (
@@ -182,7 +182,7 @@ const HomePage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {featuredSectionTasks.map((task, index) => ( // Mapping over dynamic data
                                 <Fade key={task._id || index} delay={index * 100} triggerOnce={true} duration={500}>
-                                    <div className="card h-full bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out hover:scale-105 flex flex-col"> {/* Added transition-all, ease-in-out, hover:scale-105. Adjusted scale from 115% to 105% for subtlety */}
+                                    <div className="card h-full  bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out hover:scale-105 flex flex-col"> {/* Added transition-all, ease-in-out, hover:scale-105. Adjusted scale from 115% to 105% for subtlety */}
                                         {/* Add image to task card */}
                                         {/* Using imageUrl from STATIC_FEATURED_TASKS */}
                                         {task.imageUrl && (
@@ -201,7 +201,7 @@ const HomePage = () => {
                                             </p>
                                             <p className="text-base mt-1 mb-3 flex-grow text-base-content opacity-90">{task.description?.substring(0, 100) || 'No description available.'}{task.description && task.description.length > 100 ? '...' : ''}</p> {/* Larger font for description */}
                                             <div className="flex justify-between items-center mt-auto pt-2 border-t border-base-300">
-                                                <div className="text-lg font-bold text-primary">${task.budget}</div>
+                                                <div className="text-lg font-bold text-success">${task.budget}</div>
                                                 <div className="text-sm text-base-content opacity-80"> {/* Label with good contrast */}
                                                     Due: <span className="font-medium text-base-content opacity-100">{new Date(task.deadline).toLocaleDateString()}</span> {/* Value with full opacity */}
                                                 </div>
@@ -211,7 +211,7 @@ const HomePage = () => {
                                                     This button now uses the real task._id from MongoDB,
                                                     so it will correctly link to the task detail page.
                                                 */}
-                                                <Link to={`/task/${task._id}`} className="btn btn-secondary btn-sm">See Details</Link>
+                                                <Link to={`/task/${task._id}`} className="btn btn-primary btn-sm">See Details</Link>
                                             </div>
                                         </div>
                                     </div>
@@ -252,10 +252,10 @@ const HomePage = () => {
                                 <Fade key={category.slug} delay={index * 150 + 500} triggerOnce={true} duration={500}>
                                 <Link
                                     to={`/browse-tasks?category=${category.slug}`}
-                                    className="card h-full bg-base-200 hover:bg-primary hover:text-primary-content transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 flex flex-col" // Added ease-in-out, hover:scale-105
+                                    className="group card h-full bg-base-200 hover:bg-primary hover:text-primary-content transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:scale-105 flex flex-col" // Added ease-in-out, hover:scale-105
                                 >
                                     <div className="card-body items-center text-center flex flex-col flex-grow">
-                                        {category.IconComponent && <category.IconComponent className="text-4xl mb-3 text-secondary" />}
+                                        {category.IconComponent && <category.IconComponent className="text-4xl mb-3 text-primary group-hover:text-primary-content" />}
                                         <h3 className="card-title text-lg md:text-xl">{category.name}</h3>
                                         <p className="text-sm opacity-70 mt-1 flex-grow">{category.description}</p>
                                     </div>
@@ -270,6 +270,36 @@ const HomePage = () => {
                             </div>
                         </Fade>
                     )}
+                </section>
+
+                {/* How It Works Section */}
+                <section className="mb-16 py-12 bg-base-200 rounded-box shadow-md">
+                    <Slide direction="up" triggerOnce={true} duration={500}>
+                        <h2 className="text-3xl font-bold mb-10 text-center">How It Works</h2>
+                    </Slide>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-8 text-center">
+                        <Fade delay={100} triggerOnce={true} duration={500}>
+                            <div className="card bg-base-100 border border-base-300 shadow-lg rounded-lg p-6 hover:scale-105 hover:shadow-xl transition-all duration-300 flex flex-col items-center">
+                                <div className="text-5xl text-primary mb-4">1</div>
+                                <h3 className="text-xl font-semibold mb-2">Post a Task</h3>
+                                <p className="text-base-content opacity-80">Describe your project and what you need done. It's quick and easy!</p>
+                            </div>
+                        </Fade>
+                        <Fade delay={200} triggerOnce={true} duration={500}>
+                            <div className="card bg-base-100 border border-base-300 shadow-lg rounded-lg p-6 hover:scale-105 hover:shadow-xl transition-all duration-300 flex flex-col items-center">
+                                <div className="text-5xl text-primary mb-4">2</div>
+                                <h3 className="text-xl font-semibold mb-2">Get Bids</h3>
+                                <p className="text-base-content opacity-80">Receive competitive bids from talented freelancers ready to help.</p>
+                            </div>
+                        </Fade>
+                        <Fade delay={300} triggerOnce={true} duration={500}>
+                            <div className="card bg-base-100 border border-base-300 shadow-lg rounded-lg p-6 hover:scale-105 hover:shadow-xl transition-all duration-300 flex flex-col items-center">
+                                <div className="text-5xl text-primary mb-4">3</div>
+                                <h3 className="text-xl font-semibold mb-2">Choose & Collaborate</h3>
+                                <p className="text-base-content opacity-80">Select the best fit, assign the task, and collaborate to get it done.</p>
+                            </div>
+                        </Fade>
+                    </div>
                 </section>
 
                 {/* Testimonial Section */}

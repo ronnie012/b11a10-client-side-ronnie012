@@ -84,9 +84,9 @@ const AddTaskPage = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h2 className="text-3xl font-bold mb-6 text-center">Add New Task</h2>
-            <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto bg-base-100 p-8 rounded-lg shadow-xl">
+        <div className="container mx-auto px-4 py-8 max-w-2xl text-base-content">
+            <h2 className="text-3xl font-bold mb-8 text-center">Add New Task</h2>
+            <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto bg-base-200 p-8 rounded-lg shadow-2xl border-2 border-base-300">
                 {/* Task Title */}
                 <div className="form-control mb-4">
                     <label className="label"><span className="label-text">Task Title</span></label>
@@ -111,7 +111,7 @@ const AddTaskPage = () => {
                         <option value="Writing & Translation">Writing & Translation</option>
                         <option value="Digital Marketing">Digital Marketing</option>
                         <option value="Video & Animation">Video & Animation</option>
-                        <option value="General">General</option> {/* Changed from "other" to "General" */}
+                        <option value="General">General</option>
                     </select>
                     {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message}</p>}
                 </div>

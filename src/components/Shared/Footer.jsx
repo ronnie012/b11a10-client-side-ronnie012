@@ -12,7 +12,7 @@ const Footer = () => {
     };
 
     return (
-        <footer className="footer p-10 bg-base-200 text-base-content"> {/* Changed bg-base-300 to bg-base-200 for potentially better contrast with page content */}
+        <footer className="footer p-10 bg-base-200 text-base-content max-w-[1220px] mx-auto rounded-xl mb-6 shadow-2xl border-2 border-base-300"> {/* Changed bg-base-300 to bg-base-200 for potentially better contrast with page content */}
             <nav>
                 <h6 className="footer-title">Services</h6> 
                 {/* Making these static text instead of links */}

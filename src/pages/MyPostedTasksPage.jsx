@@ -169,33 +169,33 @@ const MyPostedTasksPage = () => {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 text-base-content">
             <h2 className="text-3xl font-bold mb-6 text-center">My Posted Tasks</h2>
-            <div className="overflow-x-auto">
-                <table className="table w-full">
+            <div className="overflow-x-auto bg-base-100 p-4 rounded-lg shadow-xl border-2 border-base-300">
+                <table className="table w-full rounded-lg">
                     {/* head */}
                     <thead>
-                        <tr>
-                            <th>Task Title</th>
-                            <th>Category</th>
-                            <th>Budget</th>
-                            <th>Deadline</th>
-                            <th>Actions</th>
+                        <tr className="bg-base-200">
+                            <th className="text-base-content">Task Title</th>
+                            <th className="text-base-content">Category</th>
+                            <th className="text-base-content">Budget</th>
+                            <th className="text-base-content">Deadline</th>
+                            <th className="text-base-content">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {myTasks.map(task => (
-                            <tr key={task._id} className="hover">
+                            <tr key={task._id} className="hover:bg-accent/20">
                                 <td>
-                                    <div className="font-bold">{task.title}</div>
-                                    <div className="text-sm opacity-70">{task.description.substring(0,50)}...</div>
+                                    <div className="font-bold text-base-content">{task.title}</div>
+                                    <div className="text-sm opacity-70 text-base-content">{task.description.substring(0,50)}...</div>
                                 </td>
-                                <td>{task.category}</td>
-                                <td>${task.budget}</td>
-                                <td>{new Date(task.deadline).toLocaleDateString()}</td>
-                                <td className="space-x-1">
+                                <td className="text-base-content">{task.category}</td>
+                                <td className="text-base-content">${task.budget}</td>
+                                <td className="text-base-content">{new Date(task.deadline).toLocaleDateString()}</td>
+                                <td className="flex flex-nowrap items-center gap-1">
                                     <Link 
-                                        to={`/update-task/${task._id}`} // We'll create this route and page next
+                                        to={`/dashboard/update-task/${task._id}`} // Changed to absolute path
                                         className="btn btn-info btn-xs"
                                     >
                                         Update

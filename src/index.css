@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
+body {
+  @apply bg-base-100;
+}
 
 /* Custom Swiper Pagination Styles */
 .swiper-pagination-bullet {
@@ -31,4 +33,3 @@
 .swiper-button-prev:after {
  font-size: 1.5rem; /* Adjust size of the arrow icons if needed */
 }
-

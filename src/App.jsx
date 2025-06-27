@@ -7,13 +7,11 @@ function App() {
   return (
     <>
       <Navbar />
-      <main className="min-h-[calc(100vh-200px)] max-w-7xl mx-auto px-4 py-8"> {/* Adjust min-height based on Navbar/Footer actual height */}
-        {/* This is where the routed page content will be rendered */}
+      <main className="min-h-[calc(100vh-200px)] max-w-7xl mx-auto px-4 py-8">
         <Outlet />
       </main>
       <Footer />
     </>
   );
 }
-
 export default App;

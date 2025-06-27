@@ -97,9 +97,9 @@ const UpdateTaskPage = () => {
     if (!task) return <div className="container mx-auto px-4 py-8 text-center">Task could not be loaded.</div>; // Should be caught by error state
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <div className="container mx-auto px-4 py-8 max-w-2xl text-base-content">
             <h2 className="text-3xl font-bold mb-8 text-center">Update Task</h2>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-base-100 p-8 rounded-lg shadow-xl">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-base-200 p-8 rounded-lg shadow-2xl border-2 border-base-300">
                 <div>
                     <label htmlFor="title" className="label"><span className="label-text">Task Title</span></label>
                     <input type="text" id="title" {...register("title", { required: "Task title is required" })} className="input input-bordered w-full" />
@@ -135,7 +135,7 @@ const UpdateTaskPage = () => {
                     </div>
                     <div>
                         <label htmlFor="budget" className="label"><span className="label-text">Budget ($)</span></label>
-                        <input type="number" id="budget" step="0.01" {...register("budget", { required: "Budget is required", valueAsNumber: true, min: { value: 0, message: "Budget must be non-negative" } })} className="input input-bordered w-full" />
+                        <input type="number" id="budget" step="0.01" {...register("budget", { required: "Budget is required", valueAsNumber: true, min: { value: 0, message: "Budget cannot be negative" } })} className="input input-bordered w-full" />
                         {errors.budget && <p className="text-red-500 text-xs mt-1">{errors.budget.message}</p>}
                     </div>
                 </div>

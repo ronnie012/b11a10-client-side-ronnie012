@@ -187,11 +187,11 @@ const TaskDetailPage = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             {user && (
-                <div className="mb-4 p-3 bg-info text-info-content rounded-md shadow">
+                <div className="mb-4 p-3 bg-primary text-primary-content rounded-md shadow">
                     <p className="text-center font-semibold">You have bid for {userBidsCount} opportunities.</p>
                 </div>
             )}
-            <div className="card lg:card-side bg-base-100 shadow-xl">
+            <div className="card lg:card-side bg-base-200 shadow-xl">
                 {/* Optional: Task image or category icon could go here */}
                 <div className="card-body">
                     <h1 className="card-title text-3xl lg:text-4xl mb-2">{task.title}</h1>
@@ -212,7 +212,7 @@ const TaskDetailPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
                             <p className="font-semibold">Budget:</p>
-                            <p className="text-xl text-primary">${task.budget}</p>
+                            <p className="text-xl text-base-content">${task.budget}</p>
                         </div>
                         <div>
                             <p className="font-semibold">Task Deadline:</p>
