@@ -303,7 +303,7 @@ const HomePage = () => {
                 </section>
 
                 {/* Testimonial Section */}
-                <section className="mb-16 py-12 bg-base-200 rounded-box shadow-md">
+                <section className="mb-4 py-12 bg-base-200 rounded-box shadow-md">
                     <Slide direction="up" triggerOnce={true} duration={500}>
                         <h2 className="text-3xl font-bold mb-10 text-center">What Our Users Say</h2>
                     </Slide>
