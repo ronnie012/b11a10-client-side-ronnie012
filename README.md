@@ -3,9 +3,10 @@
 Welcome to the client-side of GigConnect! This application provides the user interface for a freelance task marketplace, enabling users to post tasks, find work, and connect with skilled professionals. It's built with modern web technologies like React, Vite, TailwindCSS, and DaisyUI.
 
 **Live Site URL:** 
-https://gig-connect-012.web.app
+https://gig-connect-012-upgraded.web.app
 
-![GigConnect](GigConnect_gig-connect-012.web.app.png)
+![GigConnect](GigConnect_gig-connect-012-upgraded.web.app.png)
+<!-- ![GigConnect](GigConnect_gig-connect-012.web.app.png) -->
 
 ## Features
 
