@@ -5,6 +5,8 @@ Welcome to the client-side of GigConnect! This application provides the user int
 **Live Site URL:** 
 https://gig-connect-012.web.app
 
+![GigConnect](GigConnect_gig-connect-012.web.app.png)
+
 ## Features
 
 *   **User Authentication:** Secure sign-up and login using Email/Password and Google Sign-In.
