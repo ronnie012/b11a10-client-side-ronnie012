@@ -1,4 +1,4 @@
-# GigConnect - Client Application
+# GigConnect - Client
 
 Welcome to the client-side of GigConnect! This application provides the user interface for a freelance task marketplace, enabling users to post tasks, find work, and connect with skilled professionals. It's built with modern web technologies like React, Vite, TailwindCSS, and DaisyUI.
 
