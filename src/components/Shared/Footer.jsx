@@ -1,6 +1,6 @@
 import React from 'react';
 // import { Link } from 'react-router-dom'; // Link component might not be needed if services are static
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram, FaGithub } from 'react-icons/fa';
 
 const Footer = () => {
     const handleNewsletterSubmit = (e) => {
@@ -37,10 +37,10 @@ const Footer = () => {
                     </div>
                     <p className="text-center text-sm  mt-14 ml-4">Copyright © {new Date().getFullYear()} - All right reserved</p>
                     <div className="text-blue-400 grid grid-flow-col gap-6 mt-12 justify-center md:justify-end">
-                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="link link-hover text-2xl"><FaFacebookF /></a>
+                        <a href="https://www.linkedin.com/in/md-sharful-islam/" target="_blank" rel="noopener noreferrer" className="link link-hover text-2xl"><FaLinkedinIn /></a>
+                        <a href="https://github.com/ronnie012" target="_blank" rel="noopener noreferrer" className="link link-hover text-2xl"><FaGithub /></a>
+                        <a href="https://web.facebook.com/profile.php?id=61571101114481" target="_blank" rel="noopener noreferrer" className="link link-hover text-2xl"><FaFacebookF /></a>
                         <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="link link-hover text-2xl"><FaTwitter /></a>
-                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="link link-hover text-2xl"><FaLinkedinIn /></a>
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="link link-hover text-2xl"><FaInstagram /></a>
                     </div>
                 </div>
             </aside>
